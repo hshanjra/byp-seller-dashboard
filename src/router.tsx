@@ -6,6 +6,10 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import ProductsPage from "./pages/dashboard/Products";
 import AuthLayout from "@/layouts/AuthLayout";
 import RegisterPage from "@/pages/auth/Register";
+import OrdersPage from "@/pages/dashboard/Orders";
+import FinancesPage from "@/pages/dashboard/Finances";
+import StoreSettings from "@/pages/dashboard/settings/StoreSettings";
+import AnalyticsPage from "@/pages/dashboard/Analytics";
 
 const router = createBrowserRouter([
   {
@@ -18,8 +22,30 @@ const router = createBrowserRouter([
         element: <IndexPage />,
       },
       {
-        path: "/products",
+        path: "products",
         element: <ProductsPage />,
+      },
+
+      {
+        path: "orders",
+        element: <OrdersPage />,
+      },
+      {
+        path: "finances",
+        element: <FinancesPage />,
+      },
+      {
+        path: "analytics",
+        element: <AnalyticsPage />,
+      },
+      {
+        path: "settings",
+        children: [
+          {
+            path: "store",
+            element: <StoreSettings />,
+          },
+        ],
       },
     ],
   },

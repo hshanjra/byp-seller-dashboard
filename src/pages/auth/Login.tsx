@@ -7,7 +7,6 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { login } from "@/http/auth";
-import { toast } from "sonner";
 import { useMutation } from "@tanstack/react-query";
 
 function LoginPage() {
@@ -25,10 +24,6 @@ function LoginPage() {
     mutationFn: login,
     onSuccess: () => {
       navigate("/", { replace: true });
-    },
-
-    onError: (error) => {
-      toast.error(error.message);
     },
   });
 
@@ -51,6 +46,14 @@ function LoginPage() {
                   Enter your email below to login to your account
                 </p>
               </div>
+
+              {/* Errors */}
+              {mutation.isError && (
+                <div className="p-2 border-l-4 border-destructive bg-destructive/10 rounded-md">
+                  <p className="text-destructive">{mutation.error.message}</p>
+                </div>
+              )}
+
               <div className="grid gap-4">
                 <div className="grid gap-2">
                   <CustomFormField
@@ -76,11 +79,12 @@ function LoginPage() {
                     Forgot your password?
                   </Link>
                 </div>
-                <Button type="submit" className="w-full">
-                  Login
-                </Button>
-                <Button variant="outline" className="w-full">
-                  Login with Google
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={mutation.isPending}
+                >
+                  {mutation.isPending ? "Logging in..." : "Login"}
                 </Button>
               </div>
               <div className="mt-4 text-center text-sm">

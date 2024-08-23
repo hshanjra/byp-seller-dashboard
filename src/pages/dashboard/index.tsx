@@ -38,7 +38,7 @@ function IndexPage() {
         <Card className="lg:max-w-md" x-chunk="charts-01-chunk-0">
           <CardHeader className="space-y-0 pb-2">
             <CardDescription>Today</CardDescription>
-            <CardTitle className="text-4xl tabular-nums">
+            <CardTitle className="text-4xl">
               12,584{" "}
               <span className="font-sans text-sm font-normal tracking-normal text-muted-foreground">
                 steps
