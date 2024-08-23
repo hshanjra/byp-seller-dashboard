@@ -1,55 +1,82 @@
+import CustomFormField from "@/components/CustomFormField";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Form } from "@/components/ui/form";
+import { FormFieldType } from "@/constants/form";
+import { LoginSchema, LoginSchemaType } from "@/validators/auth-validator";
+import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 function LoginPage() {
+  const form = useForm({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const handleSubmit = (values: LoginSchemaType) => {
+    console.log(values);
+  };
+
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
-      <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold">Login</h1>
-            <p className="text-balance text-muted-foreground">
-              Enter your email below to login to your account
-            </p>
-          </div>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="m@example.com"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  to="/forgot-password"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(handleSubmit)}
+          className="flex items-center justify-center py-12"
+        >
+          <div>
+            <div className="mx-auto grid w-[350px] gap-6">
+              <div className="grid gap-2 text-center">
+                <h1 className="text-3xl font-bold">Login</h1>
+                <p className="text-balance text-muted-foreground">
+                  Enter your email below to login to your account
+                </p>
+              </div>
+              <div className="grid gap-4">
+                <div className="grid gap-2">
+                  <CustomFormField
+                    fieldType={FormFieldType.EMAIL_INPUT}
+                    control={form.control}
+                    name="email"
+                    label="Email"
+                    placeholder="m@example.com"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <CustomFormField
+                    fieldType={FormFieldType.PASSWORD_INPUT}
+                    control={form.control}
+                    name="password"
+                    label="Password"
+                    placeholder="Enter password"
+                  />
+                  <Link
+                    to="/forgot-password"
+                    className="ml-auto inline-block text-sm underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+                <Button type="submit" className="w-full">
+                  Login
+                </Button>
+                <Button variant="outline" className="w-full">
+                  Login with Google
+                </Button>
+              </div>
+              <div className="mt-4 text-center text-sm">
+                Don&apos;t have an account?{" "}
+                <Link to="/auth/register" className="underline">
+                  Sign up
                 </Link>
               </div>
-              <Input id="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
-            <Button variant="outline" className="w-full">
-              Login with Google
-            </Button>
           </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link to="#" className="underline">
-              Sign up
-            </Link>
-          </div>
-        </div>
-      </div>
+        </form>
+      </Form>
       <div className="hidden bg-muted lg:block">
         <img
           src="/placeholder.svg"

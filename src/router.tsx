@@ -5,6 +5,7 @@ import OnboardingPage from "@/pages/onboarding";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import ProductsPage from "./pages/dashboard/Products";
 import AuthLayout from "@/layouts/AuthLayout";
+import RegisterPage from "@/pages/auth/Register";
 
 const router = createBrowserRouter([
   {
@@ -29,6 +30,10 @@ const router = createBrowserRouter([
       {
         path: "login",
         element: <LoginPage />,
+      },
+      {
+        path: "register",
+        element: <RegisterPage />,
       },
     ],
   },
