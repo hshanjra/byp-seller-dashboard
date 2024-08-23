@@ -4,10 +4,15 @@ import { Form } from "@/components/ui/form";
 import { FormFieldType } from "@/constants/form";
 import { LoginSchema, LoginSchemaType } from "@/validators/auth-validator";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { login } from "@/http/auth";
+import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
 
 function LoginPage() {
+  const navigate = useNavigate();
+
   const form = useForm({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
@@ -16,15 +21,26 @@ function LoginPage() {
     },
   });
 
-  const handleSubmit = (values: LoginSchemaType) => {
-    console.log(values);
+  const mutation = useMutation({
+    mutationFn: login,
+    onSuccess: () => {
+      navigate("/", { replace: true });
+    },
+
+    onError: (error) => {
+      toast.error(error.message);
+    },
+  });
+
+  const handleLoginSubmit = async (values: LoginSchemaType) => {
+    mutation.mutate(values);
   };
 
   return (
     <div className="w-full lg:grid lg:min-h-[600px] lg:grid-cols-2 xl:min-h-[800px]">
       <Form {...form}>
         <form
-          onSubmit={form.handleSubmit(handleSubmit)}
+          onSubmit={form.handleSubmit(handleLoginSubmit)}
           className="flex items-center justify-center py-12"
         >
           <div>
