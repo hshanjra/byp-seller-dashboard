@@ -10,12 +10,17 @@ import OrdersPage from "@/pages/dashboard/Orders";
 import FinancesPage from "@/pages/dashboard/Finances";
 import StoreSettings from "@/pages/dashboard/settings/StoreSettings";
 import AnalyticsPage from "@/pages/dashboard/Analytics";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
     // Layout
-    element: <DashboardLayout />,
+    element: (
+      <ProtectedRoute>
+        <DashboardLayout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "/",
@@ -63,7 +68,7 @@ const router = createBrowserRouter([
       },
     ],
   },
-  { path: "/onboarding", element: <OnboardingPage /> },
+  { path: "/onboard", element: <OnboardingPage /> },
 ]);
 
 export default router;

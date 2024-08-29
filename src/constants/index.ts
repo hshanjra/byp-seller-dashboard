@@ -1,5 +1,6 @@
 export const SITE_METADATA = {
-  name: "Buyurparts.com",
+  name: "buyurparts",
+  siteName: "Buyurparts.com",
   title: "Buy parts for your vehicle - buyurparts.com",
   description:
     "Buy auto parts and accessories for your Vehicle | Purchase across hundreds of Brands | Buy Ur Parts",

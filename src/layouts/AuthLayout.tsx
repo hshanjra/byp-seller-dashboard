@@ -1,7 +1,18 @@
+import { useAuth } from "@/components/AuthProvider";
 import { Toaster } from "@/components/ui/sonner";
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
 
 function AuthLayout() {
+  const { currentUser } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/", { replace: true });
+    }
+  }, [navigate, currentUser]);
+
   return (
     <>
       {/* Header  */}

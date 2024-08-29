@@ -30,7 +30,7 @@ interface CustomProps {
   dateFormat?: string;
   showTimeSelect?: boolean;
   children?: React.ReactNode;
-  renderSkeleton?: (field: never) => React.ReactNode;
+  renderSkeleton?: (field: any) => React.ReactNode;
   fieldType: FormFieldType;
 }
 

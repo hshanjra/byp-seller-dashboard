@@ -6,11 +6,13 @@ import { LoginSchema, LoginSchemaType } from "@/validators/auth-validator";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { login } from "@/http/auth";
 import { useMutation } from "@tanstack/react-query";
+import { useAuth } from "@/components/AuthProvider";
+import { Info } from "lucide-react";
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { handleLogin } = useAuth();
 
   const form = useForm({
     resolver: zodResolver(LoginSchema),
@@ -21,7 +23,7 @@ function LoginPage() {
   });
 
   const mutation = useMutation({
-    mutationFn: login,
+    mutationFn: handleLogin,
     onSuccess: () => {
       navigate("/", { replace: true });
     },
@@ -49,8 +51,13 @@ function LoginPage() {
 
               {/* Errors */}
               {mutation.isError && (
-                <div className="p-2 border-l-4 border-destructive bg-destructive/10 rounded-md">
-                  <p className="text-destructive">{mutation.error.message}</p>
+                <div className="p-2  bg-destructive/10 rounded-md">
+                  <div className="flex gap-2 items-center">
+                    <Info size={16} className="text-destructive" />
+                    <p className="text-destructive text-sm">
+                      {mutation.error.message}
+                    </p>
+                  </div>
                 </div>
               )}
 
