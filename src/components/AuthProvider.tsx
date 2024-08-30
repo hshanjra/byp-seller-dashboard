@@ -52,8 +52,12 @@ export default function AuthProvider({ children }: AuthContextProps) {
       try {
         const { data } = await api.get("/auth/me");
         setCurrentUser(data);
-      } catch {
+      } catch (e: any) {
         setCurrentUser(null);
+
+        if (e.response?.status === 401) {
+          throw new Error("Email or password is incorrect!");
+        }
       }
     }
     fetchUser();
@@ -74,11 +78,11 @@ export default function AuthProvider({ children }: AuthContextProps) {
 
       return;
     } catch (error: any) {
-      if (error.response?.status === 404) {
+      if (error.status === 404) {
         throw new Error(`Couldn't find your ${SITE_METADATA.name} account.`);
       }
 
-      if (error.response?.status === 401) {
+      if (error?.status === 401) {
         throw new Error("Email or password is incorrect!");
       }
 
@@ -105,7 +109,12 @@ export default function AuthProvider({ children }: AuthContextProps) {
   }
 
   async function handleLogout() {
-    setCurrentUser(null);
+    try {
+      await api.get("/auth/logout");
+      setCurrentUser(null);
+    } catch {
+      setCurrentUser(null);
+    }
   }
 
   return (

@@ -15,10 +15,9 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       navigate("/auth/login", { replace: true });
     } else if (
       currentUser &&
-      (!currentUser.roles.some((role) => role.includes(Roles.CUSTOMER)) ||
-        currentUser.isMerchantVerified === false)
+      !currentUser.roles.some((role) => role.includes(Roles.SELLER))
     ) {
-      // Navigate to onboarding if user is a customer or not a verified merchant
+      // Navigate to onboarding if user not have a seller role
       navigate("/onboard", { replace: true });
     }
   }, [currentUser, navigate]);
@@ -35,12 +34,12 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   // }
 
   // Handle unauthorized access for non-sellers
-  if (
-    currentUser &&
-    !currentUser.roles.some((role) => role.includes(Roles.SELLER))
-  ) {
-    return <div>Unauthorized</div>;
-  }
+  // if (
+  //   currentUser &&
+  //   !currentUser.roles.some((role) => role.includes(Roles.SELLER))
+  // ) {
+  //   return <div>Unauthorized</div>;
+  // }
 
   // If all checks pass, render children
   return children as ReactNode;

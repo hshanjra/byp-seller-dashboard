@@ -3,5 +3,6 @@ export interface User {
   fullName: string;
   roles: Array<string>;
   isEmailVerified: boolean;
-  isMerchantVerified: boolean;
+  merchantVerificationStatus: string | null;
+  merchantAccountStatus: string | null;
 }

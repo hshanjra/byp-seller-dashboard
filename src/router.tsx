@@ -11,6 +11,7 @@ import FinancesPage from "@/pages/dashboard/Finances";
 import StoreSettings from "@/pages/dashboard/settings/StoreSettings";
 import AnalyticsPage from "@/pages/dashboard/Analytics";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import OnboardLayout from "./layouts/OnboardLayout";
 
 const router = createBrowserRouter([
   {
@@ -68,7 +69,16 @@ const router = createBrowserRouter([
       },
     ],
   },
-  { path: "/onboard", element: <OnboardingPage /> },
+  {
+    path: "/onboard",
+    element: <OnboardLayout />,
+    children: [
+      {
+        path: "",
+        element: <OnboardingPage />,
+      },
+    ],
+  },
 ]);
 
 export default router;

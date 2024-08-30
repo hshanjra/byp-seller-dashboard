@@ -8,7 +8,7 @@ const api = axios.create({
   },
 });
 
-axios.interceptors.response.use(
+api.interceptors.response.use(
   (response) => response,
   (error) => {
     const customError = {
@@ -21,7 +21,7 @@ axios.interceptors.response.use(
 );
 
 // Request interceptor
-axios.interceptors.request.use(
+api.interceptors.request.use(
   (config) => {
     // You can add headers here
     // config.headers.Authorization = `Bearer ${token}`;

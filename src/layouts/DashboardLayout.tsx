@@ -1,3 +1,4 @@
+import { useAuth } from "@/components/AuthProvider";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -28,6 +29,8 @@ import { Link, Outlet, useLocation } from "react-router-dom";
 
 function DashboardLayout() {
   const { pathname } = useLocation();
+
+  const { handleLogout } = useAuth();
 
   return (
     <>
@@ -247,7 +250,9 @@ function DashboardLayout() {
                 <DropdownMenuItem>Settings</DropdownMenuItem>
                 <DropdownMenuItem>Support</DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </header>
