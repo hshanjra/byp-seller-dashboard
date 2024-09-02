@@ -19,15 +19,18 @@ export default function OnboardLayout() {
       // Navigate to login if user is not authenticated
       navigate("/auth/login", { replace: true });
     }
-    // If user is already been verified, redirect to dashboard
-    if (currentUser?.isMerchantVerified) {
+    // If seller is verified or verification is pending, redirect to dashboard
+    if (
+      currentUser?.merchantVerificationStatus === "VERIFIED" ||
+      currentUser?.merchantVerificationStatus === "PENDING"
+    ) {
       navigate("/", { replace: true });
     }
   }, [currentUser, navigate]);
 
   // Handle loading state
   if (currentUser === undefined) {
-    return <div>Loading...</div>;
+    return null;
   }
 
   // TODO: Add onboarding logic, handle routes if user is not onboard
@@ -39,7 +42,7 @@ export default function OnboardLayout() {
           <span className="text-lg">SellerZone</span>
         </nav>
         <DropdownMenu>
-          <DropdownMenuTrigger asChild>
+          <DropdownMenuTrigger asChild className="cursor-pointer">
             <CircleUser />
           </DropdownMenuTrigger>
 

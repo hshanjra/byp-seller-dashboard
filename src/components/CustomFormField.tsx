@@ -9,6 +9,7 @@ import {
 } from "./ui/form";
 import { CalendarDays, EyeIcon, EyeOffIcon } from "lucide-react";
 import ReactDatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import PhoneInput from "react-phone-number-input";
@@ -22,6 +23,8 @@ interface CustomProps {
   control: Control<any>;
   name: string;
   maxLength?: number;
+  value?: string;
+  inputMode?: "text" | "email" | "tel" | "url" | "numeric" | "decimal" | "none";
   label?: string;
   placeholder?: string;
   icon?: React.ReactNode;
@@ -49,7 +52,10 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               placeholder={props.placeholder}
               {...field}
               maxLength={props.maxLength}
-              className="h-11 border-0 placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+              disabled={props.disabled}
+              defaultValue={props.value}
+              className="h-11"
+              inputMode={props.inputMode}
             />
           </FormControl>
         </div>
@@ -77,7 +83,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
             // withCountryCallingCode
             value={field.value as E164Number | undefined}
             onChange={field.onChange}
-            className="input-phone"
+            className="h-11 border rounded-md border-primary px-2"
           />
         </FormControl>
       );
@@ -98,8 +104,8 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
       );
     case FormFieldType.DATE_PICKER:
       return (
-        <div className="border-dark-500 bg-dark-400 flex rounded-md border">
-          <CalendarDays />
+        <div className="flex gap-1 items-center">
+          <CalendarDays size={25} />
           <FormControl>
             <ReactDatePicker
               showTimeSelect={props.showTimeSelect ?? false}
@@ -108,6 +114,8 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               timeInputLabel="Time:"
               dateFormat={props.dateFormat ?? "MM/dd/yyyy"}
               wrapperClassName="date-picker"
+              className="border border-primary rounded-md px-3 h-7 text-sm"
+              placeholderText={props.placeholder}
             />
           </FormControl>
         </div>
@@ -179,6 +187,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               type="email"
               {...field}
               maxLength={props.maxLength}
+              className="h-11"
             />
           </FormControl>
         </div>
