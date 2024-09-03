@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "./ui/form";
-import { CalendarDays, EyeIcon, EyeOffIcon } from "lucide-react";
+import { CalendarDays, EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import ReactDatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Input } from "./ui/input";
@@ -18,12 +18,16 @@ import { Checkbox } from "./ui/checkbox";
 import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 import { useState } from "react";
 import { FormFieldType } from "@/constants/form";
+import { cn } from "@/lib/utils";
 
 interface CustomProps {
   control: Control<any>;
   name: string;
   maxLength?: number;
+  className?: string;
+  isLoading?: boolean;
   value?: string;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   inputMode?: "text" | "email" | "tel" | "url" | "numeric" | "decimal" | "none";
   label?: string;
   placeholder?: string;
@@ -43,21 +47,28 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
   switch (props.fieldType) {
     case FormFieldType.INPUT:
       return (
-        <div className="flex rounded-md border border-zinc-500">
+        <div className="flex rounded-md border border-zinc-500 relative">
           {props.icon && (
-            <div className="flex items-center p-1"> {props.icon}</div>
+            <div className="flex items-center p-2">{props.icon}</div>
           )}
           <FormControl>
             <Input
               placeholder={props.placeholder}
               {...field}
               maxLength={props.maxLength}
-              disabled={props.disabled}
+              disabled={props.disabled || props.isLoading}
               defaultValue={props.value}
-              className="h-11"
+              className={cn("h-11", props.className)}
               inputMode={props.inputMode}
+              onKeyDown={props.onKeyDown}
             />
           </FormControl>
+          {props.isLoading && (
+            <div className="top-1/2 absolute -translate-y-1/2 right-2 flex items-center gap-1">
+              <p className="font-semibold text-sm">Checking</p>
+              <Loader2 className="h-5 w-5 text-primary animate-spin" />
+            </div>
+          )}
         </div>
       );
     case FormFieldType.TEXTAREA:

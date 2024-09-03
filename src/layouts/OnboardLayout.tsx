@@ -35,7 +35,7 @@ export default function OnboardLayout() {
 
   // TODO: Add onboarding logic, handle routes if user is not onboard
   return (
-    <main className="flex min-h-screen flex-col items-center bg-[url('/assets/bg-gradient-2.svg')] bg-center bg-cover">
+    <main className="flex min-h-screen flex-col items-center bg-[url('/assets/bg-gradient-2.svg')] bg-center bg-cover relative">
       <header className="w-full px-10 py-3 flex items-center justify-between ">
         <nav className="flex gap-1 items-center">
           <h4 className="text-xl font-bold">BYP</h4>{" "}

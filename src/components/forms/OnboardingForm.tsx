@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -7,21 +7,27 @@ import {
   OnboardingFormData,
   OnboardingSchema,
 } from "@/validators/onboarding-validator";
-import { CircleCheck } from "lucide-react";
+import { AlertCircle, CircleCheck, Link, ShoppingBag } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
-import { Form, FormControl } from "../ui/form";
+import { Form, FormControl, FormLabel } from "../ui/form";
 import CustomFormField from "../CustomFormField";
 import { FormFieldType } from "@/constants/form";
 import {
   AccountTypeOptions,
   OnboardingFormDefaultValues,
+  SITE_METADATA,
   US_STATES,
 } from "@/constants";
 import { Label } from "../ui/label";
 import { SelectItem } from "../ui/select";
 import { Separator } from "../ui/separator";
 import FileUploader from "../FileUploader";
-import { cn } from "@/lib/utils";
+import { cn, generateSlug } from "@/lib/utils";
+import { Input } from "../ui/input";
+import { checkStoreExists, createSellerStore } from "@/http";
+import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 type Inputs = OnboardingFormData;
 const steps = [
@@ -60,12 +66,34 @@ const steps = [
     fields: ["displayName", "about", "returnPolicy", "shippingPolicy"],
   },
 
-  { id: "Step 4", name: "Bank Details", fields: [] },
+  {
+    id: "Step 4",
+    name: "Bank Details",
+    fields: [
+      "bankAccountType",
+      "bankName",
+      "accountHolderName",
+      "accountNumber",
+      "routingNumber",
+      "bankBic",
+      "bankIban",
+      "bankSwiftCode",
+      "bankAddress",
+    ],
+  },
+  { id: "Step 5", name: "Submit Application", fields: [] },
 ];
 
 function OnboardingForm() {
+  // Toast
+  const { toast } = useToast();
+
+  const navigate = useNavigate();
+
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(1);
+  const [storeSlug, setStoreSlug] = useState<string>("");
+  const [storeAvailability, setStoreAvailability] = useState<boolean>(true); // State to track store availability
 
   const delta = currentStep - previousStep;
 
@@ -74,13 +102,56 @@ function OnboardingForm() {
     defaultValues: OnboardingFormDefaultValues,
   });
 
+  // Mutation
+  const mutation = useMutation({
+    mutationFn: createSellerStore,
+    onSuccess: () => {
+      navigate("/", { replace: true });
+    },
+  });
+
   // Form elements
-  // const errors = form.formState.errors;
   const accountType = form.watch("accountType");
+  const storeName = form.watch("displayName");
+
+  // Function to check if the store with the same slug exists
+  const StoreExists = useCallback(async () => {
+    if (!storeSlug) return;
+
+    const exists = await checkStoreExists(storeSlug);
+    if (exists) {
+      setStoreAvailability(false);
+      toast({
+        description: "Store with the same name already exists",
+        title: "Error",
+        variant: "destructive",
+      });
+    } else {
+      setStoreAvailability(true);
+    }
+  }, [storeSlug, toast]);
+
+  // const debouncedUpdateQuery = _.debounce(StoreExists, 400);
+
+  // Debounce the StoreExists function
+  const debouncedStoreExistsQuery = useCallback(
+    () => StoreExists(),
+    [StoreExists]
+  );
+
+  // useEffect for handling store name changes and calling debounced function
+  useEffect(() => {
+    if (storeName) {
+      setStoreAvailability(true);
+      const generatedSlug = generateSlug(storeName);
+      setStoreSlug(generatedSlug);
+    }
+  }, [storeName]);
 
   const processForm: SubmitHandler<Inputs> = (data) => {
+    mutation.mutate(data);
     console.log(data);
-    form.reset();
+    // form.reset();
   };
 
   type FieldName = keyof Inputs;
@@ -94,6 +165,15 @@ function OnboardingForm() {
     if (!output) return;
 
     if (currentStep < steps.length - 1) {
+      if (currentStep === steps.length - 3) {
+        await debouncedStoreExistsQuery();
+        // Check for availability of store errors
+        if (storeAvailability === false) {
+          return;
+        }
+
+        // await form.handleSubmit(processForm)();
+      }
       if (currentStep === steps.length - 2) {
         await form.handleSubmit(processForm)();
       }
@@ -157,7 +237,11 @@ function OnboardingForm() {
 
       {/* Form */}
       <Form {...form}>
-        <form className="mt-8 py-8" onSubmit={form.handleSubmit(processForm)}>
+        <form
+          className="mt-8 py-8"
+          onSubmit={form.handleSubmit(processForm)}
+          autoComplete="off"
+        >
           {currentStep === 1 && (
             <motion.div
               initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
@@ -228,6 +312,7 @@ function OnboardingForm() {
                         label="Social Security Number (SSN)*"
                         placeholder="AAA-GG-SSSS"
                         maxLength={9}
+                        className="uppercase"
                       />
                     </div>
 
@@ -445,16 +530,42 @@ function OnboardingForm() {
                 Please provide information about your store.
               </p>
 
-              {/* TODO: add debounce and check unique store name, if store is exists show error */}
               <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="col-span-full">
+                <div className="sm:col-span-3">
                   <CustomFormField
                     fieldType={FormFieldType.INPUT}
                     control={form.control}
                     name="displayName"
                     label="Store Name*"
                     placeholder="XYZ Parts"
+                    icon={<ShoppingBag />}
                   />
+
+                  {storeName && storeAvailability === false && (
+                    <div className="text-destructive flex items-center gap-2 mt-2">
+                      <AlertCircle className="h-4 w-4" />
+                      <span className="text-sm">
+                        Store with the same name already exists.
+                      </span>
+                    </div>
+                  )}
+                </div>
+
+                <div className="sm:col-span-3">
+                  <FormLabel>Store address</FormLabel>
+                  <div className="flex rounded-md border border-zinc-500 mt-2">
+                    <div className="flex items-center p-2">
+                      <Link />
+                    </div>
+                    <Input
+                      name="storeAddress"
+                      // disabled={true}
+                      className="h-11 !cursor-pointer"
+                      title="Click to copy"
+                      value={`${SITE_METADATA.url}/seller/${storeSlug}`}
+                      disabled
+                    />
+                  </div>
                 </div>
 
                 <div className="col-span-full">
@@ -490,15 +601,148 @@ function OnboardingForm() {
             </motion.div>
           )}
 
+          {/* Bank Details */}
+
           {currentStep === 3 && (
-            <>
+            <motion.div
+              initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <h2 className="text-base font-semibold leading-7 text-gray-900">
+                Bank Details
+              </h2>
+              <p className="mt-1 text-sm leading-6 text-gray-600">
+                Please fill the bank details to receive payments.
+              </p>
+
+              {/* TODO: add debounce and check unique store name, if store is exists show error */}
+              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                <div className="col-span-full">
+                  <FormLabel>Bank Account Type</FormLabel>
+                  <CustomFormField
+                    control={form.control}
+                    name="bankAccountType"
+                    fieldType={FormFieldType.SKELETON}
+                    renderSkeleton={(field) => (
+                      <FormControl>
+                        <RadioGroup
+                          className="flex gap-6 items-center justify-center"
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          {AccountTypeOptions.map((option) => (
+                            <div
+                              key={option}
+                              className="flex items-center gap-2"
+                            >
+                              <RadioGroupItem value={option} id={option} />
+                              <Label
+                                htmlFor={option}
+                                className="cursor-pointer"
+                              >
+                                {option}
+                              </Label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      </FormControl>
+                    )}
+                  />
+                </div>
+
+                <div className="sm:col-span-3">
+                  <CustomFormField
+                    fieldType={FormFieldType.INPUT}
+                    control={form.control}
+                    name="accountHolderName"
+                    label="Account Holder Name*"
+                    placeholder=""
+                  />
+                </div>
+                <div className="sm:col-span-3">
+                  <CustomFormField
+                    fieldType={FormFieldType.INPUT}
+                    control={form.control}
+                    name="bankName"
+                    label="Bank Name*"
+                    placeholder=""
+                  />
+                </div>
+
+                <div className="sm:col-span-3">
+                  <CustomFormField
+                    fieldType={FormFieldType.INPUT}
+                    control={form.control}
+                    name="accountNumber"
+                    label="Account Number*"
+                    placeholder=""
+                  />
+                </div>
+
+                <div className="sm:col-span-3">
+                  <CustomFormField
+                    fieldType={FormFieldType.INPUT}
+                    control={form.control}
+                    name="routingNumber"
+                    // disabled={true}
+                    className="h-11 !cursor-pointer"
+                    label="Bank Routing Number"
+                  />
+                </div>
+
+                <div className="col-span-full">
+                  <CustomFormField
+                    fieldType={FormFieldType.INPUT}
+                    control={form.control}
+                    name="bankBic"
+                    label="Bank BIC"
+                    placeholder=""
+                  />
+                </div>
+
+                <div className="sm:col-span-3">
+                  <CustomFormField
+                    fieldType={FormFieldType.INPUT}
+                    control={form.control}
+                    name="bankIban"
+                    label="Bank IBAN"
+                    placeholder="BH75QGSP959B311711C75T"
+                  />
+                </div>
+
+                <div className="sm:col-span-3">
+                  <CustomFormField
+                    fieldType={FormFieldType.INPUT}
+                    control={form.control}
+                    name="bankSwiftCode"
+                    label="Bank Swift Code"
+                    placeholder=""
+                  />
+                </div>
+
+                <div className="col-span-full">
+                  <CustomFormField
+                    fieldType={FormFieldType.TEXTAREA}
+                    control={form.control}
+                    name="bankAddress"
+                    label="Bank address"
+                    placeholder=""
+                  />
+                </div>
+              </div>
+            </motion.div>
+          )}
+
+          {currentStep === 4 && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
               <h2 className="text-base font-semibold leading-7 text-gray-900">
                 Complete
               </h2>
               <p className="mt-1 text-sm leading-6 text-gray-600">
                 Thank you for your submission.
               </p>
-            </>
+            </motion.div>
           )}
         </form>
       </Form>

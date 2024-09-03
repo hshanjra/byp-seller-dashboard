@@ -21,14 +21,14 @@ api.interceptors.response.use(
 );
 
 // Request interceptor
-api.interceptors.request.use(
-  (config) => {
-    // You can add headers here
-    // config.headers.Authorization = `Bearer ${token}`;
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+// api.interceptors.request.use(
+//   (config) => {
+//     // You can add headers here
+//     // config.headers.Authorization = `Bearer ${token}`;
+//     return config;
+//   },
+//   (error) => {
+//     return Promise.reject(error);
+//   }
+// );
 export default api;

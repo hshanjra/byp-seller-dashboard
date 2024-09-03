@@ -12,6 +12,7 @@ import StoreSettings from "@/pages/dashboard/settings/StoreSettings";
 import AnalyticsPage from "@/pages/dashboard/Analytics";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import OnboardLayout from "./layouts/OnboardLayout";
+import { Toaster } from "./components/ui/toaster";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <DashboardLayout />
+        <Toaster />
       </ProtectedRoute>
     ),
     children: [
@@ -71,7 +73,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/onboard",
-    element: <OnboardLayout />,
+    element: (
+      <>
+        <OnboardLayout />
+        <Toaster />
+      </>
+    ),
     children: [
       {
         path: "",

@@ -14,13 +14,38 @@ export const OnboardingSchema = z
     state: z.string().min(1, "State is required"),
     zip: z.string().min(1, "Zip is required"),
     country: z.string().min(1, "Country is required"),
-    displayName: z.string().min(1, "Display name is required"),
+    displayName: z
+      .string()
+      .min(5, "Store name is too short, at least 5 characters are required")
+      .max(100, "Store name is too long"),
     businessEmail: z.string().optional(),
     businessPhone: z.string().max(12, "Phone number is too long").optional(),
     about: z.string().optional(),
     returnPolicy: z.string().optional(),
     shippingPolicy: z.string().optional(),
     identityDocs: z.custom<File[]>(),
+    // Bank Details
+    bankAccountType: z.enum(["INDIVIDUAL", "BUSINESS"]).default("BUSINESS"),
+    bankName: z
+      .string()
+      .min(1, "Bank name is required")
+      .max(100, "Bank name is too long"),
+    accountHolderName: z
+      .string()
+      .min(1, "Account holder name is required")
+      .max(100, "Account holder name is too long"),
+    accountNumber: z
+      .string()
+      .min(1, "Account number is required")
+      .max(100, "Account number is too long"),
+    routingNumber: z.string().max(100, "Routing number is too long"),
+    bankBic: z.string().max(100, "Bank BIC is too long"),
+    bankIban: z.string().max(100, "Bank IBAN is too long"),
+    bankSwiftCode: z.string().max(100, "Bank Swift code is too long"),
+    bankAddress: z
+      .string()
+      .min(1, "Bank address is required")
+      .max(100, "Bank address is too long"),
   })
   .superRefine((data, ctx) => {
     if (!data.identityDocs || data.identityDocs.length === 0) {
@@ -50,6 +75,14 @@ export const OnboardingSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Employer Identification Number (EIN) is required",
+          path: ["ein"],
+        });
+      }
+
+      if (data.ein.length !== 9) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Enter valid employer identification number",
           path: ["ein"],
         });
       }

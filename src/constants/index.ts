@@ -49,6 +49,16 @@ export const OnboardingFormDefaultValues = {
   returnPolicy: "",
   shippingPolicy: "",
   identityDocs: [],
+
+  bankAccountType: AccountTypeOptions[0] as any,
+  bankName: "",
+  accountHolderName: "",
+  accountNumber: "",
+  routingNumber: "",
+  bankBic: "",
+  bankIban: "",
+  bankSwiftCode: "",
+  bankAddress: "",
 };
 
 export const US_STATES = [
