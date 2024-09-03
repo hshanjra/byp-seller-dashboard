@@ -148,9 +148,9 @@ function OnboardingForm() {
     }
   }, [storeName]);
 
-  const processForm: SubmitHandler<Inputs> = (data) => {
-    mutation.mutate(data);
-    console.log(data);
+  const processForm: SubmitHandler<Inputs> = (values: OnboardingFormData) => {
+    mutation.mutate(values);
+    console.log(values);
     // form.reset();
   };
 

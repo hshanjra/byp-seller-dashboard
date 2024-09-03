@@ -19,39 +19,63 @@ export async function checkStoreExists(
 }
 
 export async function createSellerStore(v: OnboardingFormData) {
-  console.log("Onboarding Form Data", v);
   const values = OnboardingSchema.parse(v);
   const formData: FormData = new FormData();
 
+  // Append identity documents (files) if they exist
   if (values.identityDocs && values.identityDocs.length > 0) {
-    const blobFiles = values.identityDocs.map((file) => {
-      return new Blob([file], { type: file.type });
-    });
-
-    blobFiles.forEach((blobFile) => {
-      formData.append("blobFile", blobFile);
-    });
     values.identityDocs.forEach((file) => {
-      formData.append("fileName", file.name);
+      formData.append("identityDocs", file); // Ensure the key matches backend expectations
     });
   }
 
-  console.log("Form Data", formData);
+  // Append other fields to FormData
+  formData.append("displayName", values.displayName);
+  formData.append("dateOfBirth", new Date(values.dateOfBirth).toISOString()); // Convert to ISO string for consistency
+  formData.append("businessAddress[streetAddress]", values.street);
+  formData.append("businessAddress[city]", values.city);
+  formData.append("businessAddress[state]", values.state);
+  formData.append("businessAddress[zipCode]", values.zip);
+  formData.append("businessAddress[country]", "US");
+  formData.append("accountType", values.accountType);
+  formData.append("aboutSeller", values.about || "");
+  formData.append("businessName", values.businessName);
+  formData.append("businessEmail", values.businessEmail || "");
+  formData.append("businessPhone", values.businessPhone || "");
+  formData.append("businessLicense", values.businessLicense || "");
+  formData.append(
+    "businessLicenseExp",
+    new Date(values.businessLicenseExp || "").toISOString()
+  );
+  formData.append("EIN", values.ein);
+  formData.append("SSN", values.ssn);
+  formData.append("returnPolicyTerms", values.returnPolicy || "");
+  formData.append("shippingPolicyTerms", values.shippingPolicy || "");
+
+  if (values.bankAccountType === "BUSINESS") {
+    formData.append("bankAccountType", values.bankAccountType);
+    formData.append("bankName", values.bankName);
+    formData.append("accountHolderName", values.accountHolderName);
+    formData.append("accountNumber", values.accountNumber);
+    formData.append("routingNumber", values.routingNumber);
+    formData.append("bankBic", values.bankBic);
+    formData.append("bankIban", values.bankIban);
+    formData.append("bankSwiftCode", values.bankSwiftCode);
+    formData.append("bankAddress", values.bankAddress);
+  }
 
   try {
-    const sellerData = {
-      ...values,
-      dateOfBirth: new Date(values.dateOfBirth),
-      identityDocs: formData,
-    };
-    const { data: store } = await api.post("/seller/onboard", sellerData);
+    // make request to create store
+    const { data: store } = await api.post("/seller/onboard", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     if (store) return true;
   } catch (error: any) {
     if (error.status === 409) {
       return { error: "Store with the same name already exists" };
     }
-
-    console.log(error);
 
     return { error: error.message || "An error occurred" };
   }
