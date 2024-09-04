@@ -39,6 +39,19 @@ interface CustomProps {
   children?: React.ReactNode;
   renderSkeleton?: (field: any) => React.ReactNode;
   fieldType: FormFieldType;
+  type?:
+    | "text"
+    | "number"
+    | "password"
+    | "email"
+    | "date"
+    | "phone"
+    | "url"
+    | "search"
+    | "tel"
+    | "numeric"
+    | "decimal"
+    | "none";
 }
 
 const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
@@ -47,7 +60,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
   switch (props.fieldType) {
     case FormFieldType.INPUT:
       return (
-        <div className="flex rounded-md border border-zinc-500 relative">
+        <div className="flex rounded-md border-input relative">
           {props.icon && (
             <div className="flex items-center p-2">{props.icon}</div>
           )}
@@ -58,6 +71,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
               maxLength={props.maxLength}
               disabled={props.disabled || props.isLoading}
               defaultValue={props.value}
+              type={props.type}
               className={cn("h-11", props.className)}
               inputMode={props.inputMode}
               onKeyDown={props.onKeyDown}
@@ -71,13 +85,14 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
           )}
         </div>
       );
+
     case FormFieldType.TEXTAREA:
       return (
         <FormControl>
           <Textarea
             placeholder={props.placeholder}
             {...field}
-            className="h-32 placeholder:text-zinc-400"
+            className={cn("h-32", props.className)}
             disabled={props.disabled}
             maxLength={props.maxLength}
           />
@@ -94,7 +109,7 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
             // withCountryCallingCode
             value={field.value as E164Number | undefined}
             onChange={field.onChange}
-            className="h-11 border rounded-md border-primary px-2"
+            className="h-11 border-input rounded-md px-2"
           />
         </FormControl>
       );
@@ -141,11 +156,11 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
             disabled={props.disabled}
           >
             <FormControl>
-              <SelectTrigger className="h-11 border-zinc-500 focus:ring-0 focus:ring-offset-0">
+              <SelectTrigger className="h-11  focus:ring-0 focus:ring-offset-0">
                 <SelectValue placeholder={props.placeholder} />
               </SelectTrigger>
             </FormControl>
-            <SelectContent className="border-zinc-500">
+            <SelectContent className="border-input">
               {props.children}
             </SelectContent>
           </Select>

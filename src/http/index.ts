@@ -1,4 +1,5 @@
 import api from "@/lib/api";
+import { Category, Product } from "@/types";
 import {
   OnboardingFormData,
   OnboardingSchema,
@@ -18,6 +19,7 @@ export async function checkStoreExists(
   }
 }
 
+// Seller onboard
 export async function createSellerStore(v: OnboardingFormData) {
   const values = OnboardingSchema.parse(v);
   const formData: FormData = new FormData();
@@ -74,9 +76,35 @@ export async function createSellerStore(v: OnboardingFormData) {
     if (store) return true;
   } catch (error: any) {
     if (error.status === 409) {
-      return { error: "Store with the same name already exists" };
+      throw new Error("Store with the same name already exists");
     }
 
+    throw error;
+  }
+}
+
+// Get all products
+export async function getProducts(): Promise<Product[]> {
+  try {
+    const { data } = await api.get("/seller/products");
+    return data;
+  } catch (error: any) {
+    if (error.status === 404) {
+      return [];
+    }
+    throw error;
+  }
+}
+
+// Get all categories
+export async function getCategories(): Promise<Category[]> {
+  try {
+    const { data } = await api.get("/category");
+    return data;
+  } catch (error: any) {
+    if (error.status === 404) {
+      return [];
+    }
     throw error;
   }
 }
