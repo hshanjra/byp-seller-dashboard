@@ -7,7 +7,16 @@ import {
   OnboardingFormData,
   OnboardingSchema,
 } from "@/validators/onboarding-validator";
-import { AlertCircle, CircleCheck, Link, ShoppingBag } from "lucide-react";
+import {
+  AlertCircle,
+  CircleCheck,
+  CircleHelp,
+  CircleX,
+  House,
+  Link,
+  Loader2,
+  ShoppingBag,
+} from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { Form, FormControl, FormLabel } from "../ui/form";
 import CustomFormField from "../CustomFormField";
@@ -27,7 +36,7 @@ import { Input } from "../ui/input";
 import { checkStoreExists, createSellerStore } from "@/http";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { Button } from "../ui/button";
 
 type Inputs = OnboardingFormData;
 const steps = [
@@ -88,8 +97,6 @@ function OnboardingForm() {
   // Toast
   const { toast } = useToast();
 
-  const navigate = useNavigate();
-
   const [previousStep, setPreviousStep] = useState(0);
   const [currentStep, setCurrentStep] = useState(1);
   const [storeSlug, setStoreSlug] = useState<string>("");
@@ -105,9 +112,9 @@ function OnboardingForm() {
   // Mutation
   const mutation = useMutation({
     mutationFn: createSellerStore,
-    onSuccess: () => {
-      navigate("/", { replace: true });
-    },
+    // onSuccess: () => {
+    //   // navigate("/", { replace: true });
+    // },
   });
 
   // Form elements
@@ -192,7 +199,10 @@ function OnboardingForm() {
   return (
     <section className="flex flex-col justify-between bg-white">
       {/* steps */}
-      <nav aria-label="Progress">
+      <nav
+        aria-label="Progress"
+        className={cn({ hidden: mutation.isSuccess || mutation.isError })}
+      >
         <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
           {steps.map((step, index) => (
             <li key={step.name} className="md:flex-1">
@@ -602,7 +612,6 @@ function OnboardingForm() {
           )}
 
           {/* Bank Details */}
-
           {currentStep === 3 && (
             <motion.div
               initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
@@ -736,12 +745,64 @@ function OnboardingForm() {
 
           {currentStep === 4 && (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
-                Complete
-              </h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Thank you for your submission.
-              </p>
+              <div className="flex justify-center flex-col items-center">
+                {/* Success message */}
+                {mutation.isSuccess && (
+                  <div className="w-full rounded-lg p-4 sm:p-6 flex flex-col items-center">
+                    <CircleCheck className="size-16 mb-2 text-sky-600 animate-bounce" />
+                    <h3 className="text-xl font-semibold leading-6 text-sky-600">
+                      Application Submitted Successfully!
+                    </h3>
+                    <p className="text-sm mt-2 text-center text-sky-600">
+                      We'll notify you when your application is approved.
+                      <br /> This usually takes less than 12 hours.
+                    </p>
+
+                    <Button
+                      asChild
+                      className="mt-5 bg-sky-600 hover:bg-sky-600/90 rounded-full"
+                    >
+                      <a href="/" className="flex items-center gap-x-2">
+                        <House className="size-6" />
+                        Go to dashboard
+                      </a>
+                    </Button>
+                  </div>
+                )}
+
+                {/* Error message */}
+                {mutation.isError && (
+                  <div className="w-full rounded-lg p-4 sm:p-6 flex flex-col items-center">
+                    <CircleX className="size-16 mb-2 text-destructive" />
+                    <h3 className="text-xl font-semibold leading-6 text-destructive">
+                      Oops, something went wrong
+                    </h3>
+                    <p className="text-sm mt-2 text-center text-destructive">
+                      Try again, or
+                      <br /> Contact our support if the problem persists.
+                    </p>
+                    <Button
+                      asChild
+                      className="mt-5 bg-destructive hover:bg-destructive/90 rounded-full"
+                    >
+                      <a href="/support" className="flex items-center gap-x-2">
+                        <CircleHelp className="size-6" />
+                        Contact Support
+                      </a>
+                    </Button>
+                  </div>
+                )}
+
+                {/* Loading */}
+                {mutation.isPending && (
+                  <div className="w-full rounded-lg p-4 sm:p-6 flex flex-col items-center">
+                    <Loader2 className="text-sky-600 animate-spin size-12" />
+                    <h3 className="text-xl font-semibold leading-6 text-sky-600 mt-2">
+                      Submitting your application...
+                    </h3>
+                  </div>
+                )}
+              </div>
             </motion.div>
           )}
         </form>
@@ -753,7 +814,9 @@ function OnboardingForm() {
           <button
             type="button"
             onClick={prev}
-            disabled={currentStep === 1}
+            disabled={
+              currentStep === 1 || mutation.isSuccess || mutation.isPending
+            }
             className="rounded bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg
@@ -774,7 +837,11 @@ function OnboardingForm() {
           <button
             type="button"
             onClick={next}
-            disabled={currentStep === steps.length - 1}
+            disabled={
+              currentStep === steps.length - 1 ||
+              mutation.isSuccess ||
+              mutation.isPending
+            }
             className="rounded bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg

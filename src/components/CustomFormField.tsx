@@ -29,7 +29,7 @@ interface CustomProps {
   value?: string;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   inputMode?: "text" | "email" | "tel" | "url" | "numeric" | "decimal" | "none";
-  label?: string;
+  label?: string | React.ReactNode;
   placeholder?: string;
   icon?: React.ReactNode;
   iconAlt?: string;
@@ -101,13 +101,13 @@ const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
     case FormFieldType.CHECKBOX:
       return (
         <FormControl>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-x-2">
             <Checkbox
               id={props.name}
               checked={field.value}
               onCheckedChange={field.onChange}
             />
-            <label htmlFor={props.name} className="checkbox-label">
+            <label htmlFor={props.name} className="cursor-pointer">
               {props.label}
             </label>
           </div>
