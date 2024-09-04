@@ -77,6 +77,6 @@ export async function createSellerStore(v: OnboardingFormData) {
       return { error: "Store with the same name already exists" };
     }
 
-    return { error: error.message || "An error occurred" };
+    throw error;
   }
 }

@@ -9,33 +9,18 @@ import {
 import { jwtDecode } from "jwt-decode";
 import api from "@/lib/api";
 import {
+  LoginSchema,
   LoginSchemaType,
+  RegisterSchema,
   RegisterSchemaType,
 } from "@/validators/auth-validator";
 import { SITE_METADATA } from "@/constants";
+import { Roles } from "@/enums";
 
 type AuthContext = {
-  // authToken?: string | null;
   currentUser?: User | null;
-  //   getUser: () => Promise<User | null>;
-  handleLogin: ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => Promise<void>;
-  handleRegister: ({
-    firstName,
-    lastName,
-    email,
-    password,
-  }: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    password: string;
-  }) => Promise<void>;
+  handleLogin: (values: LoginSchemaType) => Promise<void>;
+  handleRegister: (values: RegisterSchemaType) => Promise<void>;
   handleLogout: () => Promise<void>;
 };
 
@@ -44,7 +29,6 @@ const AuthContext = createContext<AuthContext | undefined>(undefined);
 type AuthContextProps = PropsWithChildren;
 
 export default function AuthProvider({ children }: AuthContextProps) {
-  // const [authToken, setAuthToken] = useState<string | null>();
   const [currentUser, setCurrentUser] = useState<User | null>();
 
   useEffect(() => {
@@ -64,12 +48,12 @@ export default function AuthProvider({ children }: AuthContextProps) {
   }, []);
 
   async function handleLogin(values: LoginSchemaType): Promise<void> {
+    const parsedValues = LoginSchema.parse(values);
+
     try {
-      const { data } = await api.post("/auth/login", values);
+      const { data } = await api.post("/auth/login", parsedValues);
 
       const token: string = data?.accessToken;
-
-      // setAuthToken(token);
 
       // Decrypt access token to extract the user
       const decodedUser = jwtDecode<User>(token);
@@ -86,7 +70,9 @@ export default function AuthProvider({ children }: AuthContextProps) {
         throw new Error("Email or password is incorrect!");
       }
 
-      //   TODO: throw an error if user is blocked or tried too many attempts
+      if (error?.status === 429) {
+        throw new Error("Too many attempts. Please try again later.");
+      }
 
       setCurrentUser(null);
 
@@ -94,17 +80,34 @@ export default function AuthProvider({ children }: AuthContextProps) {
     }
   }
   async function handleRegister(values: RegisterSchemaType) {
-    try {
-      const { data } = await api.post("/auth/register", values);
+    const parsedValues = RegisterSchema.parse(values);
 
-      // setAuthToken(data?.accessToken);
+    const registerValues = {
+      firstName: parsedValues.firstName,
+      lastName: parsedValues.lastName,
+      email: parsedValues.email,
+      password: parsedValues.password,
+      role: Roles.SELLER,
+    };
+
+    try {
+      const { data } = await api.post("/auth/register", registerValues);
+
       // Decrypt access token to extract the user
       const decodedUser = jwtDecode(data?.accessToken);
       setCurrentUser(decodedUser as User);
       return;
-    } catch {
-      // setAuthToken(null);
+    } catch (error: any) {
       setCurrentUser(null);
+      if (error.status === 409) {
+        throw new Error("User already exists. try logging in");
+      }
+
+      if (error?.status === 429) {
+        throw new Error("Too many attempts. Please try again later.");
+      }
+
+      throw new Error("Something went wrong. Please try again later.");
     }
   }
 
@@ -123,7 +126,6 @@ export default function AuthProvider({ children }: AuthContextProps) {
         currentUser,
         handleLogin,
         handleLogout,
-        // getUser,
         handleRegister,
       }}
     >

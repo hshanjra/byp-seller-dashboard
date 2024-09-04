@@ -1,6 +1,8 @@
 import api from "@/lib/api";
 import {
+  LoginSchema,
   LoginSchemaType,
+  RegisterSchema,
   RegisterSchemaType,
 } from "@/validators/auth-validator";
 
@@ -37,7 +39,9 @@ export const login = async (values: LoginSchemaType) => {
 
   // return { accessToken: data.accessToken };
 
-  return await api.post("/auth/login", values);
+  const parsedValues = LoginSchema.parse(values);
+
+  return await api.post("/auth/login", parsedValues);
 };
 
 export const register = async (values: RegisterSchemaType) => {
@@ -49,5 +53,14 @@ export const register = async (values: RegisterSchemaType) => {
 
   // return { data: null, error: null };
 
-  return await api.post("/auth/register", values);
+  const parsedValues = RegisterSchema.parse(values);
+
+  const registerValues = {
+    firstName: parsedValues.firstName,
+    lastName: parsedValues.lastName,
+    email: parsedValues.email,
+    password: parsedValues.password,
+  };
+
+  return await api.post("/auth/register", registerValues);
 };
