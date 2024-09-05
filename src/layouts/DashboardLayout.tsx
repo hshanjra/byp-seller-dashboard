@@ -20,7 +20,6 @@ import {
   LineChart,
   Menu,
   Package,
-  Package2,
   Search,
   Settings,
   ShoppingCart,
@@ -39,8 +38,8 @@ function DashboardLayout() {
           <div className="flex h-full max-h-screen flex-col gap-2">
             <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
               <Link to="/" className="flex items-center gap-2 font-semibold">
-                <Package2 className="h-6 w-6" />
-                <span className="">Acme Inc</span>
+                <img src="/assets/byp-logo.webp" className="h-6" />
+                <span className="">SellerZone</span>
               </Link>
               <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
                 <Bell className="h-4 w-4" />
@@ -149,7 +148,7 @@ function DashboardLayout() {
                     to="#"
                     className="flex items-center gap-2 text-lg font-semibold"
                   >
-                    <Package2 className="h-6 w-6" />
+                    <img src="/assets/byp-logo.webp" className="h-8" />
                     <span className="sr-only">Acme Inc</span>
                   </Link>
                   <Link

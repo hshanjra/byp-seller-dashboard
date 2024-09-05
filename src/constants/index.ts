@@ -64,6 +64,46 @@ export const OnboardingFormDefaultValues = {
   bankAddress: "",
 };
 
+export enum StatusOptions {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
+export enum ProductCondition {
+  NEW = "NEW",
+  USED = "USED",
+  REFURBISHED = "REFURBISHED",
+}
+
+export const CreateProductsFormDefaultValues = {
+  productTitle: "",
+  metaTitle: "",
+  metaDescription: "",
+  productBrand: "",
+  shortDescription: "",
+  longDescription: "",
+  keywords: "",
+  partNumber: "",
+  sku: "",
+  productLength: 0,
+  productWidth: 0,
+  productHeight: 0,
+  shippingPrice: 0,
+  category: "",
+  subCategory: "",
+  productStock: 1,
+  regularPrice: 0,
+  salePrice: 0,
+  images: [],
+  productCondition: ProductCondition.NEW,
+  isActive: StatusOptions.ACTIVE,
+  isGenericProduct: false,
+  compatibleMake: "",
+  compatibleModels: [],
+  compatibleSubmodels: [],
+  compatibleYears: [],
+};
+
 export const US_STATES = [
   { value: "AL", name: "Alabama", abbr: "AL" },
   { value: "AK", name: "Alaska", abbr: "AK" },
@@ -124,4 +164,27 @@ export const ACCEPTED_MIME_TYPES = [
   // "application/pdf",
   // "application/msword",
   // "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+];
+
+export const VEHICLE_ATTRIBUTES = [
+  {
+    make: "BMW",
+    models: [
+      {
+        name: "X5",
+        years: ["2020", "2021", "2022"],
+        subModels: ["X5", "X6", "X7"],
+      },
+      {
+        name: "5 Series",
+        years: ["2019", "2020", "2021"],
+        subModels: ["5", "6", "7"],
+      },
+      {
+        name: "3 Series",
+        years: ["2019", "2020", "2021"],
+        subModels: ["3", "4", "5"],
+      },
+    ],
+  },
 ];

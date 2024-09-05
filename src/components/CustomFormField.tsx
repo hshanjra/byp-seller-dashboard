@@ -1,5 +1,5 @@
 import { E164Number } from "libphonenumber-js/core";
-import { Control } from "react-hook-form";
+import { Control, ControllerRenderProps } from "react-hook-form";
 import {
   FormControl,
   FormField,
@@ -54,7 +54,13 @@ interface CustomProps {
     | "none";
 }
 
-const RenderInput = ({ field, props }: { field: any; props: CustomProps }) => {
+const RenderInput = ({
+  field,
+  props,
+}: {
+  field: ControllerRenderProps;
+  props: CustomProps;
+}) => {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   switch (props.fieldType) {
