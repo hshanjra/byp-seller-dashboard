@@ -43,7 +43,9 @@ interface ProductFormProps {
 function ProductForm({ title, buttonTitle, product }: ProductFormProps) {
   const form = useForm({
     resolver: zodResolver(createProductSchema),
-    defaultValues: {},
+    defaultValues: {
+      category: product?.category?.id || "",
+    },
   });
 
   const handleProductFormSubmit = (values: CreateProductSchemaType) => {
@@ -117,7 +119,7 @@ function ProductForm({ title, buttonTitle, product }: ProductFormProps) {
                       placeholder="Honda"
                     />
 
-                    <div className="sm:flex sm:items-center sm:gap-2">
+                    <div className="sm:flex sm:items-start sm:gap-2">
                       <CustomFormField
                         fieldType={FormFieldType.INPUT}
                         control={form.control}

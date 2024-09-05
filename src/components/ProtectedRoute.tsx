@@ -2,6 +2,7 @@ import { PropsWithChildren, ReactNode, useEffect } from "react";
 import { useAuth } from "./AuthProvider";
 import { Roles } from "@/enums";
 import { useNavigate } from "react-router-dom";
+import ParentLoader from "./ParentLoader";
 
 type ProtectedRouteProps = PropsWithChildren;
 
@@ -24,7 +25,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   // Handle loading state
   if (currentUser === undefined) {
-    return <div>Loading...</div>;
+    return <ParentLoader />;
   }
 
   // TODO: check this logic on onboarding page
