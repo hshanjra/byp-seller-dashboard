@@ -1,8 +1,6 @@
-import { useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
 
 function NotFoundPage() {
-  const navigate = useNavigate();
   return (
     <main className="flex h-screen w-full items-center justify-center">
       <div className="max-w-7xl mx-auto">
@@ -17,11 +15,7 @@ function NotFoundPage() {
               mystery. But you can click the button below to go back to the
               homepage.
             </p>
-            <Button
-              className="mt-5 rounded-full"
-              onClick={() => navigate("/", { replace: true })}
-              asChild
-            >
+            <Button className="mt-5 rounded-full" asChild>
               <a href="/">Go Home</a>
             </Button>
           </div>
