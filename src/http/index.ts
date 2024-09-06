@@ -88,9 +88,22 @@ export async function createSellerStore(v: OnboardingFormData) {
 }
 
 // Get all products
-export async function getProducts(): Promise<Product[]> {
+export async function getProducts({
+  status,
+  page,
+  limit,
+}: {
+  status?: "ACTIVE" | "INACTIVE";
+  page?: number;
+  limit?: number;
+}): Promise<Product[]> {
   try {
-    const { data } = await api.get("/seller/products");
+    const safePage = page || 1;
+    const safeLimit = limit || 30;
+
+    const { data } = await api.get(
+      `/seller/products?status=${status}&page=${safePage}&limit=${safeLimit}`
+    );
     return data;
   } catch (error: any) {
     if (error.status === 404) {

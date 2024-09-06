@@ -14,6 +14,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     if (currentUser === null) {
       // Navigate to login if user is not authenticated
       navigate("/auth/login", { replace: true });
+      navigate(0);
     } else if (
       currentUser &&
       !currentUser.roles.some((role) => role.includes(Roles.SELLER))

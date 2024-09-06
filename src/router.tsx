@@ -3,7 +3,7 @@ import LoginPage from "@/pages/auth/Login";
 import IndexPage from "@/pages/dashboard";
 import OnboardingPage from "@/pages/onboarding";
 import DashboardLayout from "@/layouts/DashboardLayout";
-import ProductsPage from "./pages/dashboard/products/Products";
+import ProductsPage from "./pages/dashboard/products";
 import AuthLayout from "@/layouts/AuthLayout";
 import RegisterPage from "@/pages/auth/Register";
 import OrdersPage from "@/pages/dashboard/Orders";
@@ -15,6 +15,7 @@ import OnboardLayout from "./layouts/OnboardLayout";
 import { Toaster } from "./components/ui/toaster";
 import EditProduct from "./pages/dashboard/products/edit-product";
 import CreateProduct from "./pages/dashboard/products/create-product";
+import NotFoundPage from "./components/Errors/NotFoundPage";
 
 const router = createBrowserRouter([
   {
@@ -100,6 +101,12 @@ const router = createBrowserRouter([
         element: <OnboardingPage />,
       },
     ],
+  },
+
+  // 404 page
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 
