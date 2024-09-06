@@ -146,7 +146,7 @@ const RenderInput = ({
               timeInputLabel="Time:"
               dateFormat={props.dateFormat ?? "MM/dd/yyyy"}
               wrapperClassName="date-picker"
-              className="border border-primary rounded-md px-3 h-7 text-sm"
+              className="border-input rounded-md px-3 h-7 text-sm"
               placeholderText={props.placeholder}
             />
           </FormControl>
@@ -177,7 +177,7 @@ const RenderInput = ({
 
     case FormFieldType.PASSWORD_INPUT:
       return (
-        <div className="relative flex rounded-md border border-zinc-500">
+        <div className="relative flex rounded-md border-input">
           <FormControl>
             <>
               <Input
@@ -209,7 +209,7 @@ const RenderInput = ({
 
     case FormFieldType.EMAIL_INPUT:
       return (
-        <div className="flex rounded-md border border-zinc-500">
+        <div className="flex rounded-md border-input">
           {props.icon && (
             <div className="flex items-center p-1"> {props.icon}</div>
           )}
