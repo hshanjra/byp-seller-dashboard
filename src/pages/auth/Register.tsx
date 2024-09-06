@@ -63,7 +63,8 @@ function RegisterPage() {
               <div className="grid gap-2 text-center">
                 <h1 className="text-3xl font-bold">Seller Register</h1>
                 <p className="text-balance text-muted-foreground">
-                  Fill the form below to create an {SITE_METADATA.name} account
+                  Fill the form below to create a {SITE_METADATA.name} seller
+                  account
                 </p>
               </div>
 
@@ -171,11 +172,11 @@ function RegisterPage() {
       </Form>
       <div className="hidden bg-muted lg:block">
         <img
-          src="/placeholder.svg"
+          src="/assets/image-01.jpg"
           alt="Image"
           width="1920"
           height="1080"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          className="h-full w-full max-h-[800px] object-cover dark:brightness-[0.2] dark:grayscale"
         />
       </div>
     </div>
