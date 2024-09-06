@@ -27,8 +27,8 @@ import {
   createProductSchema,
   CreateProductSchemaType,
 } from "@/validators/product-validator";
-import { useQuery } from "@tanstack/react-query";
-import { getCategories } from "@/http";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { createProduct, getCategories } from "@/http";
 import {
   CreateProductsFormDefaultValues,
   ProductConditionOptions,
@@ -37,6 +37,8 @@ import {
 } from "@/constants";
 import { Checkbox } from "../ui/checkbox";
 import { getRecentYears } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 interface CreateProductFormProps {
   title?: string;
@@ -44,13 +46,38 @@ interface CreateProductFormProps {
 }
 
 function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const form = useForm<CreateProductSchemaType>({
     resolver: zodResolver(createProductSchema),
     defaultValues: CreateProductsFormDefaultValues,
   });
 
-  const handleProductFormSubmit = (values: CreateProductSchemaType) => {
-    console.log(values);
+  // Mutation
+  const mutation = useMutation({
+    mutationKey: ["createProduct"],
+    mutationFn: createProduct,
+    onError: (err) => {
+      toast({
+        title: "Error",
+        description: err.message,
+        variant: "destructive",
+      });
+    },
+
+    onSuccess: (data) => {
+      toast({
+        title: "Success",
+        description: `${data.productTitle} created successfully.`,
+        variant: "success",
+      });
+
+      navigate("/products", { replace: true });
+    },
+  });
+
+  const handleProductFormSubmit = async (values: CreateProductSchemaType) => {
+    mutation.mutate(values);
   };
 
   // Fetch categories
@@ -115,8 +142,16 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
               <h1 className="text-lg font-semibold md:text-2xl">{title}</h1>
             )}
 
-            <Button type="submit" className="flex items-center gap-2">
-              <PlusCircle size={18} />
+            <Button
+              type="submit"
+              className="flex items-center gap-2"
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? (
+                <Loader2 size={18} className="animate-spin" />
+              ) : (
+                <PlusCircle size={18} />
+              )}
               {buttonTitle || "Save"}
             </Button>
           </div>
@@ -698,8 +733,16 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
                 </CardContent>
               </Card>
 
-              <Button type="submit" className="flex items-center gap-2">
-                <PlusCircle size={18} />
+              <Button
+                type="submit"
+                className="flex items-center gap-2"
+                disabled={mutation.isPending}
+              >
+                {mutation.isPending ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <PlusCircle size={18} />
+                )}
                 {buttonTitle || "Save"}
               </Button>
             </div>

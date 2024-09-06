@@ -4,6 +4,10 @@ import {
   OnboardingFormData,
   OnboardingSchema,
 } from "@/validators/onboarding-validator";
+import {
+  createProductSchema,
+  CreateProductSchemaType,
+} from "@/validators/product-validator";
 
 // Query to check if store with same slug exists
 export async function checkStoreExists(
@@ -106,5 +110,84 @@ export async function getCategories(): Promise<Category[]> {
       return [];
     }
     throw error;
+  }
+}
+
+// Create Product
+export async function createProduct(
+  values: CreateProductSchemaType
+): Promise<Product> {
+  const v = createProductSchema.parse(values);
+  const formData: FormData = new FormData();
+
+  // Append images if they exist
+  if (v.images && v.images.length > 0) {
+    v.images.forEach((file) => {
+      formData.append("images", file);
+    });
+  }
+
+  // Append other fields to FormData
+  formData.append("productTitle", v.productTitle);
+  formData.append("productBrand", v.productBrand);
+  formData.append("shortDescription", v.shortDescription);
+  formData.append("longDescription", v.longDescription);
+  formData.append("keywords", v.keywords);
+  formData.append("partNumber", v.partNumber);
+  formData.append("sku", v.sku);
+  formData.append("productLength", v.productLength.toString());
+  formData.append("productWidth", v.productWidth.toString());
+  formData.append("productHeight", v.productHeight.toString());
+  formData.append("categoryId", v.category);
+  formData.append("metaTitle", v.metaTitle);
+  formData.append("metaDescription", v.metaDescription);
+  formData.append("productStock", v.productStock.toString());
+  formData.append("regularPrice", v.regularPrice.toString());
+  formData.append("salePrice", v.salePrice.toString());
+  formData.append(
+    "shippingPrice",
+    v.shippingPrice && v.shippingPrice >= 0 ? v.shippingPrice.toString() : "0"
+  );
+  formData.append("productCondition", v.productCondition);
+  formData.append("isActive", v.isActive === "ACTIVE" ? "true" : "false");
+  formData.append(
+    "isGenericProduct",
+    v.isGenericProduct === true ? "true" : "false"
+  );
+
+  if (!v.isGenericProduct) {
+    formData.append("compatibleMake", v.compatibleMake);
+    if (v.compatibleModels) {
+      v.compatibleModels.forEach((model) => {
+        formData.append("compatibleModel[]", model);
+      });
+    }
+
+    if (v.compatibleSubmodels) {
+      v.compatibleSubmodels.forEach((submodel) => {
+        formData.append("compatibleSubmodel[]", submodel);
+      });
+    }
+
+    if (v.compatibleYears) {
+      v.compatibleYears.forEach((year) => {
+        formData.append("compatibleYear[]", year.toString());
+      });
+    }
+  }
+
+  try {
+    const { data } = await api.post("/seller/products", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return data;
+  } catch (error: any) {
+    if (error.status === 400) {
+      throw new Error("Please check all fields");
+    }
+    throw new Error("Something went wrong");
   }
 }

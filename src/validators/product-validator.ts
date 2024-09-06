@@ -40,22 +40,21 @@ export const createProductSchema = z
     sku: z.string().min(1, "SKU is required").max(20, "SKU is too long"),
     productLength: z.coerce
       .number()
-      .positive()
-      .min(1, "Length is required")
+      .positive("Length must be greater than 0")
+      .min(1, "Enter length")
       .max(100, "Product length is too long"),
     productWidth: z.coerce
       .number()
-      .positive()
+      .positive("Width must be greater than 0")
       .min(1, "Width is required")
       .max(100, "Product width is too long"),
     productHeight: z.coerce
       .number()
-      .positive()
+      .positive("Height must be greater than 0")
       .min(1, "Height is required")
       .max(100, "Product height is too long"),
     shippingPrice: z.coerce
       .number()
-      .positive()
       .max(100, "Shipping price must be less than $100")
       .optional(),
     category: z.string().min(1, "Please select a category"),
@@ -82,7 +81,7 @@ export const createProductSchema = z
       message: "Please select status from the list",
     }),
     isGenericProduct: z.coerce.boolean().default(false),
-    compatibleMake: z.string().min(1, "Please select a make"),
+    compatibleMake: z.string(),
     compatibleModels: z.array(z.string()),
     compatibleSubmodels: z.array(z.string()),
     //   compatibleEngine: z.array(z.string().min(1, "Please select a engine")),
@@ -97,8 +96,24 @@ export const createProductSchema = z
       });
     }
 
+    // Check if sale price is greater than regular price
+    if (data.salePrice && data.salePrice >= data.regularPrice) {
+      ctx.addIssue({
+        code: "custom",
+        message: "Sale price cannot be greater than or equal regular price",
+        path: ["salePrice"],
+      });
+    }
+
     if (!data.isGenericProduct) {
-      // Models / Submodels / Years validation
+      // Make / Models / Submodels / Years validation
+      if (!data.compatibleMake) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Please select a make",
+          path: ["compatibleMake"],
+        });
+      }
       if (!data.compatibleModels || data.compatibleModels.length === 0) {
         ctx.addIssue({
           code: "custom",
