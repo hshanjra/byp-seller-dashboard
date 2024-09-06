@@ -174,7 +174,9 @@ function ProductsPage() {
                         </TableCell>
 
                         <TableCell className="hidden md:table-cell">
-                          {formatDate(product.createdAt, { format: "numeric" })}
+                          {formatDate(product.createdAt, {
+                            format: "numeric",
+                          })}
                         </TableCell>
 
                         <TableCell>
@@ -218,7 +220,7 @@ function ProductsPage() {
           </TabsContent>
         </Tabs>
       ) : (
-        <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm h-[100vh -20%]">
+        <div className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm h-screen">
           <div className="flex flex-col items-center gap-1 text-center">
             <h3 className="text-2xl font-bold tracking-tight">
               You have no products
@@ -226,7 +228,9 @@ function ProductsPage() {
             <p className="text-sm text-muted-foreground">
               You can start selling as soon as you add a product.
             </p>
-            <Button className="mt-4">Add Product</Button>
+            <Button className="mt-4" onClick={() => navigate("create")}>
+              Add Product
+            </Button>
           </div>
         </div>
       )}
