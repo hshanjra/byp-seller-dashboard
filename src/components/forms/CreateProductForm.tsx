@@ -36,6 +36,7 @@ import {
   VEHICLE_ATTRIBUTES,
 } from "@/constants";
 import { Checkbox } from "../ui/checkbox";
+import { getRecentYears } from "@/lib/utils";
 
 interface CreateProductFormProps {
   title?: string;
@@ -43,7 +44,7 @@ interface CreateProductFormProps {
 }
 
 function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
-  const form = useForm({
+  const form = useForm<CreateProductSchemaType>({
     resolver: zodResolver(createProductSchema),
     defaultValues: CreateProductsFormDefaultValues,
   });
@@ -64,6 +65,8 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
   const selectedCategoryId = form.watch("category") as any;
   const isGenericProduct = form.watch("isGenericProduct");
   const selectedMake = form.watch("compatibleMake");
+  const selectedModels = form.watch("compatibleModels");
+  const selectedSubmodels = form.watch("compatibleSubmodels");
 
   // Find the selected category
   const selectedCategory = categories?.find(
@@ -77,15 +80,22 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
       : [];
 
   /* COMPATIBILITY FIELDS */
-  // const [selectedMake, selectedModels] = form.watch([
-  //   "compatibleMake",
-  //   "compatibleModels",
-  // ]);
+  const getModels = () => {
+    const make = VEHICLE_ATTRIBUTES.find((v) => v.make === selectedMake);
+    return make ? make.models : [];
+  };
 
-  const selectedModels =
-    VEHICLE_ATTRIBUTES.find((vehicle) => vehicle.make === selectedMake)
-      ?.models || [];
+  const getSubModels = () => {
+    const make = VEHICLE_ATTRIBUTES.find((v) => v.make === selectedMake);
+    if (!make) return [];
 
+    const subModels = selectedModels.map((model) => {
+      const subModel = make.models.find((m) => m.name === model);
+      return subModel ? subModel.subModels : [];
+    });
+
+    return subModels.flat();
+  };
   // Reset form values when selected make changes
   // useEffect(() => {
   //   form.reset({
@@ -438,73 +448,192 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
                         ))}
                       </CustomFormField>
 
-                      {/* FIXME: */}
                       {/* Compatible Models with Checkbox */}
-                      <div className="mt-4">
-                        <h4 className="text-sm font-medium">
-                          Compatible Models
-                        </h4>
-                        <div className="flex flex-col gap-2 mt-2">
-                          <FormField
-                            control={form.control}
-                            name="compatibleModels"
-                            render={() => (
-                              <FormItem>
-                                {/* Wrap the list of FormField components inside a fragment */}
-                                <>
-                                  {selectedModels?.map((model) => (
-                                    <FormField
-                                      key={model.name}
-                                      control={form.control}
-                                      name="compatibleModels"
-                                      render={({ field }) => {
-                                        const value = field.value || []; // Ensure value is an array
-                                        return (
-                                          <FormItem className="flex flex-row items-start space-x-3">
-                                            <FormControl>
-                                              <Checkbox
-                                                checked={value.includes(
-                                                  model.name
-                                                )}
-                                                onCheckedChange={(checked) => {
-                                                  return checked
-                                                    ? field.onChange([
-                                                        ...value,
-                                                        model.name,
-                                                      ])
-                                                    : field.onChange(
-                                                        value.filter(
-                                                          (val) =>
-                                                            val !== model.name
-                                                        )
-                                                      );
-                                                }}
-                                              />
+                      {selectedMake && (
+                        <div className="my-4">
+                          <div className="flex flex-col gap-2 mt-2">
+                            <CustomFormField
+                              fieldType={FormFieldType.SKELETON}
+                              control={form.control}
+                              name="compatibleModels"
+                              renderSkeleton={() => (
+                                <FormItem>
+                                  <div className="mb-4">
+                                    <FormLabel className="text-sm">
+                                      Compatible Models
+                                    </FormLabel>
+                                  </div>
+                                  <div className="grid sm:grid-cols-3 gap-3">
+                                    {getModels().map((item) => (
+                                      <FormField
+                                        key={item.name}
+                                        control={form.control}
+                                        name="compatibleModels"
+                                        render={({ field }) => {
+                                          return (
+                                            <FormItem
+                                              key={item.name}
+                                              className="flex flex-row items-start space-x-2 space-y-0"
+                                            >
+                                              <FormControl>
+                                                <Checkbox
+                                                  onCheckedChange={(
+                                                    checked
+                                                  ) => {
+                                                    return checked
+                                                      ? field.onChange([
+                                                          ...field.value,
+                                                          item.name,
+                                                        ])
+                                                      : field.onChange(
+                                                          field.value?.filter(
+                                                            (value) =>
+                                                              value !==
+                                                              item.name
+                                                          )
+                                                        );
+                                                  }}
+                                                />
+                                              </FormControl>
                                               <FormLabel className="font-normal">
-                                                {model.name}
+                                                {item.name}
                                               </FormLabel>
-                                            </FormControl>
-                                          </FormItem>
-                                        );
-                                      }}
-                                    />
-                                  ))}
-                                </>
-                              </FormItem>
-                            )}
-                          />
+                                            </FormItem>
+                                          );
+                                        }}
+                                      />
+                                    ))}
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                         </div>
-                      </div>
+                      )}
 
                       {/* Sub Models */}
+                      {selectedModels && selectedModels.length > 0 && (
+                        <div className="my-4">
+                          <div className="flex flex-col gap-2 mt-2">
+                            <CustomFormField
+                              fieldType={FormFieldType.SKELETON}
+                              control={form.control}
+                              name="compatibleSubmodels"
+                              renderSkeleton={() => (
+                                <FormItem>
+                                  <div className="mb-4">
+                                    <FormLabel className="text-sm">
+                                      Compatible Sub Models
+                                    </FormLabel>
+                                  </div>
+                                  <div className="grid sm:grid-cols-3 gap-3">
+                                    {getSubModels().map((item, i) => (
+                                      <FormField
+                                        key={i}
+                                        control={form.control}
+                                        name="compatibleSubmodels"
+                                        render={({ field }) => {
+                                          return (
+                                            <FormItem
+                                              key={item}
+                                              className="flex flex-row items-start space-x-2 space-y-0"
+                                            >
+                                              <FormControl>
+                                                <Checkbox
+                                                  onCheckedChange={(
+                                                    checked
+                                                  ) => {
+                                                    return checked
+                                                      ? field.onChange([
+                                                          ...field.value,
+                                                          item,
+                                                        ])
+                                                      : field.onChange(
+                                                          field.value?.filter(
+                                                            (value) =>
+                                                              value !== item
+                                                          )
+                                                        );
+                                                  }}
+                                                />
+                                              </FormControl>
+                                              <FormLabel className="font-normal">
+                                                {item}
+                                              </FormLabel>
+                                            </FormItem>
+                                          );
+                                        }}
+                                      />
+                                    ))}
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      )}
 
                       {/* Years */}
-                      <CustomFormField
-                        fieldType={FormFieldType.INPUT}
-                        control={form.control}
-                        name="compatibleYears"
-                        label="Select Compatible Years"
-                      />
+                      {selectedSubmodels && selectedSubmodels.length > 0 && (
+                        <div className="my-4">
+                          <div className="flex flex-col gap-2 mt-2">
+                            <CustomFormField
+                              fieldType={FormFieldType.SKELETON}
+                              control={form.control}
+                              name="compatibleYears"
+                              renderSkeleton={() => (
+                                <FormItem>
+                                  <div className="mb-4">
+                                    <FormLabel className="text-sm">
+                                      Compatible Years
+                                    </FormLabel>
+                                  </div>
+                                  <div className="grid sm:grid-cols-3 gap-3">
+                                    {getRecentYears().map((item, i) => (
+                                      <FormField
+                                        key={i}
+                                        control={form.control}
+                                        name="compatibleYears"
+                                        render={({ field }) => {
+                                          return (
+                                            <FormItem
+                                              key={item}
+                                              className="flex flex-row items-start space-x-2 space-y-0"
+                                            >
+                                              <FormControl>
+                                                <Checkbox
+                                                  onCheckedChange={(
+                                                    checked
+                                                  ) => {
+                                                    return checked
+                                                      ? field.onChange([
+                                                          ...field.value,
+                                                          item,
+                                                        ])
+                                                      : field.onChange(
+                                                          field.value?.filter(
+                                                            (value) =>
+                                                              value !== item
+                                                          )
+                                                        );
+                                                  }}
+                                                />
+                                              </FormControl>
+                                              <FormLabel className="font-normal">
+                                                {item}
+                                              </FormLabel>
+                                            </FormItem>
+                                          );
+                                        }}
+                                      />
+                                    ))}
+                                  </div>
+                                </FormItem>
+                              )}
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </CardContent>

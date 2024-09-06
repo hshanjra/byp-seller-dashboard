@@ -83,12 +83,10 @@ export const createProductSchema = z
     }),
     isGenericProduct: z.coerce.boolean().default(false),
     compatibleMake: z.string().min(1, "Please select a make"),
-    compatibleModels: z.array(z.string().min(1, "Please select a model")),
-    compatibleSubmodels: z.array(
-      z.string().min(1, "Please select a sub model")
-    ),
+    compatibleModels: z.array(z.string()),
+    compatibleSubmodels: z.array(z.string()),
     //   compatibleEngine: z.array(z.string().min(1, "Please select a engine")),
-    compatibleYears: z.array(z.number().min(1, "Please select a year")),
+    compatibleYears: z.array(z.number()),
   })
   .superRefine((data, ctx) => {
     if (!data.images || data.images.length === 0) {
@@ -97,6 +95,33 @@ export const createProductSchema = z
         message: "Please upload at least one image",
         path: ["images"],
       });
+    }
+
+    if (!data.isGenericProduct) {
+      // Models / Submodels / Years validation
+      if (!data.compatibleModels || data.compatibleModels.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Please select at least one model",
+          path: ["compatibleModels"],
+        });
+      }
+
+      if (!data.compatibleSubmodels || data.compatibleSubmodels.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Please select at least one sub model",
+          path: ["compatibleSubmodels"],
+        });
+      }
+
+      if (!data.compatibleYears || data.compatibleYears.length === 0) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Please select at least one year",
+          path: ["compatibleYears"],
+        });
+      }
     }
   });
 

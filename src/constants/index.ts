@@ -187,4 +187,24 @@ export const VEHICLE_ATTRIBUTES = [
       },
     ],
   },
+  {
+    make: "Mercedes-Benz",
+    models: [
+      {
+        name: "X5",
+        years: ["2020", "2021", "2022"],
+        subModels: ["X5", "X6", "X7"],
+      },
+      {
+        name: "5 Series",
+        years: ["2019", "2020", "2021"],
+        subModels: ["5", "6", "7"],
+      },
+      {
+        name: "3 Series",
+        years: ["2019", "2020", "2021"],
+        subModels: ["3", "4", "5"],
+      },
+    ],
+  },
 ];
