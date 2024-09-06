@@ -3,18 +3,21 @@ import { useAuth } from "./AuthProvider";
 import { Roles } from "@/enums";
 import { useNavigate } from "react-router-dom";
 import ParentLoader from "./ParentLoader";
+import { useQueryClient } from "@tanstack/react-query";
 
 type ProtectedRouteProps = PropsWithChildren;
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const qClient = useQueryClient();
 
   useEffect(() => {
     if (currentUser === null) {
+      //  clear react query cache
+      qClient.removeQueries();
       // Navigate to login if user is not authenticated
       navigate("/auth/login", { replace: true });
-      navigate(0);
     } else if (
       currentUser &&
       !currentUser.roles.some((role) => role.includes(Roles.SELLER))
@@ -22,10 +25,10 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
       // Navigate to onboarding if user not have a seller role
       navigate("/onboard", { replace: true });
     }
-  }, [currentUser, navigate]);
+  }, [qClient, currentUser, navigate]);
 
   // Handle loading state
-  if (currentUser === undefined) {
+  if (currentUser === undefined || currentUser === null) {
     return <ParentLoader />;
   }
 
