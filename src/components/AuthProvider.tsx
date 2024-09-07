@@ -16,6 +16,7 @@ import {
 } from "@/validators/auth-validator";
 import { SITE_METADATA } from "@/constants";
 import { Roles } from "@/enums";
+import { useQueryClient } from "@tanstack/react-query";
 
 type AuthContext = {
   currentUser?: User | null;
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContext | undefined>(undefined);
 type AuthContextProps = PropsWithChildren;
 
 export default function AuthProvider({ children }: AuthContextProps) {
+  const qClient = useQueryClient();
   const [currentUser, setCurrentUser] = useState<User | null>();
 
   useEffect(() => {
@@ -39,8 +41,8 @@ export default function AuthProvider({ children }: AuthContextProps) {
       } catch (e: any) {
         setCurrentUser(null);
 
-        if (e.response?.status === 401) {
-          throw new Error("Email or password is incorrect!");
+        if (e.status === 401) {
+          throw new Error("Unauthorize!");
         }
       }
     }
@@ -115,8 +117,12 @@ export default function AuthProvider({ children }: AuthContextProps) {
     try {
       await api.get("/auth/logout");
       setCurrentUser(null);
+      //  clear react query cache
+      qClient.removeQueries();
     } catch {
       setCurrentUser(null);
+      //  clear react query cache
+      qClient.removeQueries();
     }
   }
 
