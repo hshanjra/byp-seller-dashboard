@@ -157,8 +157,7 @@ function OnboardingForm() {
 
   const processForm: SubmitHandler<Inputs> = (values: OnboardingFormData) => {
     mutation.mutate(values);
-    console.log(values);
-    // form.reset();
+    form.reset();
   };
 
   type FieldName = keyof Inputs;
