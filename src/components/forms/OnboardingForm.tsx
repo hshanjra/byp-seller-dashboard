@@ -115,6 +115,16 @@ function OnboardingForm() {
     // onSuccess: () => {
     //   // navigate("/", { replace: true });
     // },
+
+    onError: (err) => {
+      if (err instanceof Error) {
+        toast({
+          description: err.message,
+          title: "Error",
+          variant: "destructive",
+        });
+      }
+    },
   });
 
   // Form elements
@@ -157,7 +167,7 @@ function OnboardingForm() {
 
   const processForm: SubmitHandler<Inputs> = (values: OnboardingFormData) => {
     mutation.mutate(values);
-    form.reset();
+    // form.reset();
   };
 
   type FieldName = keyof Inputs;
@@ -196,11 +206,16 @@ function OnboardingForm() {
   };
 
   return (
-    <section className="flex flex-col justify-between bg-white">
+    <section className="flex flex-col justify-between bg-white relative">
       {/* steps */}
       <nav
         aria-label="Progress"
-        className={cn({ hidden: mutation.isSuccess || mutation.isError })}
+        className={cn(
+          "sm:shadow-[0px_0px_22px_0px_#00000024] sm:p-5 rounded-xl sm:absolute sm:-top-14 bg-white w-full",
+          {
+            hidden: mutation.isSuccess || mutation.isError,
+          }
+        )}
       >
         <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
           {steps.map((step, index) => (

@@ -37,7 +37,6 @@ export async function createSellerStore(v: OnboardingFormData) {
 
   // Append other fields to FormData
   formData.append("displayName", values.displayName);
-  formData.append("dateOfBirth", new Date(values.dateOfBirth).toISOString()); // Convert to ISO string for consistency
   formData.append("businessAddress[streetAddress]", values.street);
   formData.append("businessAddress[city]", values.city);
   formData.append("businessAddress[state]", values.state);
@@ -45,29 +44,35 @@ export async function createSellerStore(v: OnboardingFormData) {
   formData.append("businessAddress[country]", "US");
   formData.append("accountType", values.accountType);
   formData.append("aboutSeller", values.about || "");
-  formData.append("businessName", values.businessName);
-  formData.append("businessEmail", values.businessEmail || "");
-  formData.append("businessPhone", values.businessPhone || "");
-  formData.append("businessLicense", values.businessLicense || "");
-  formData.append(
-    "businessLicenseExp",
-    new Date(values.businessLicenseExp || "").toISOString()
-  );
-  formData.append("EIN", values.ein);
-  formData.append("SSN", values.ssn);
   formData.append("returnPolicyTerms", values.returnPolicy || "");
   formData.append("shippingPolicyTerms", values.shippingPolicy || "");
+  formData.append("bankAccountType", values.bankAccountType);
+  formData.append("bankName", values.bankName);
+  formData.append("accountHolderName", values.accountHolderName);
+  formData.append("accountNumber", values.accountNumber);
+  formData.append("routingNumber", values.routingNumber);
+  formData.append("bankBic", values.bankBic);
+  formData.append("bankIban", values.bankIban);
+  formData.append("bankSwiftCode", values.bankSwiftCode);
+  formData.append("bankAddress", values.bankAddress);
 
-  if (values.bankAccountType === "BUSINESS") {
-    formData.append("bankAccountType", values.bankAccountType);
-    formData.append("bankName", values.bankName);
-    formData.append("accountHolderName", values.accountHolderName);
-    formData.append("accountNumber", values.accountNumber);
-    formData.append("routingNumber", values.routingNumber);
-    formData.append("bankBic", values.bankBic);
-    formData.append("bankIban", values.bankIban);
-    formData.append("bankSwiftCode", values.bankSwiftCode);
-    formData.append("bankAddress", values.bankAddress);
+  // Append individual fields if accountType is INDIVIDUAL
+  if (values.accountType === "INDIVIDUAL") {
+    formData.append("SSN", values.ssn);
+    formData.append("dateOfBirth", new Date(values.dateOfBirth).toISOString()); // Convert to ISO string for consistency
+  }
+
+  // Append business fields if accountType is BUSINESS
+  if (values.accountType === "BUSINESS") {
+    formData.append("EIN", values.ein || "");
+    formData.append("businessName", values.businessName || "");
+    formData.append("businessEmail", values.businessEmail || "");
+    formData.append("businessPhone", values.businessPhone || "");
+    formData.append("businessLicense", values.businessLicense || "");
+    formData.append(
+      "businessLicenseExp",
+      new Date(values.businessLicenseExp || "").toISOString()
+    );
   }
 
   try {
@@ -81,6 +86,10 @@ export async function createSellerStore(v: OnboardingFormData) {
   } catch (error: any) {
     if (error.status === 409) {
       throw new Error("Store with the same name already exists");
+    }
+
+    if (error.status === 400) {
+      throw new Error("Please check all fields and try again");
     }
 
     throw error;
