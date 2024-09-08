@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectTrigger, SelectValue } from "./ui/select";
 import { useState } from "react";
 import { FormFieldType } from "@/constants/form";
 import { cn } from "@/lib/utils";
+import TipTapEditor from "./TipTapEditor";
 
 interface CustomProps {
   control: Control<any>;
@@ -220,6 +221,22 @@ const RenderInput = ({
               {...field}
               maxLength={props.maxLength}
               className="h-11"
+            />
+          </FormControl>
+        </div>
+      );
+
+    case FormFieldType.TEXT_EDITOR:
+      return (
+        <div className="flex rounded-md border-input">
+          {props.icon && (
+            <div className="flex items-center p-1"> {props.icon}</div>
+          )}
+          <FormControl>
+            <TipTapEditor
+              placeholder={props.placeholder}
+              className={cn("h-11", props.className)}
+              {...field}
             />
           </FormControl>
         </div>

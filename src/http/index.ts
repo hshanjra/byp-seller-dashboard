@@ -213,3 +213,16 @@ export async function createProduct(
     throw new Error("Something went wrong");
   }
 }
+
+// Delete Product
+export async function deleteProduct(productId: string): Promise<boolean> {
+  try {
+    await api.delete(`/seller/products/${productId}`);
+    return true;
+  } catch (error: any) {
+    if (error.status === 404) {
+      throw new Error("Product not found");
+    }
+    throw new Error("Error deleting product");
+  }
+}

@@ -9,4 +9,5 @@ export enum FormFieldType {
   SKELETON = "skeleton",
   PASSWORD_INPUT = "passwordInput",
   EMAIL_INPUT = "emailInput",
+  TEXT_EDITOR = "textEditor",
 }

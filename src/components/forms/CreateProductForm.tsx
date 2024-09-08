@@ -208,19 +208,20 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
                     </div>
 
                     <CustomFormField
-                      fieldType={FormFieldType.TEXTAREA}
+                      fieldType={FormFieldType.TEXT_EDITOR}
                       control={form.control}
                       name="shortDescription"
                       label="Short Description"
-                      placeholder="Best Gaming Controller"
+                      placeholder="Enter a short description of your product, we recommend writing in list style with bullet points"
+                      className="h-56"
                     />
 
                     <CustomFormField
-                      fieldType={FormFieldType.TEXTAREA}
+                      fieldType={FormFieldType.TEXT_EDITOR}
                       control={form.control}
                       name="longDescription"
                       label="Long Description"
-                      placeholder="Write about your product"
+                      placeholder="Enter a detailed description of your product"
                       className="h-80"
                     />
                   </div>
