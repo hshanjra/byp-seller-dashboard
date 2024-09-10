@@ -39,7 +39,9 @@ function DashboardLayout() {
             <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
               <Link to="/" className="flex items-center gap-2 font-semibold">
                 <img src="/assets/byp-logo.webp" className="h-6" />
-                <span className="">SellerZone</span>
+                <h3 className="font-light text-base">
+                  Seller<span className="font-bold text-base">Zone</span>
+                </h3>
               </Link>
               <Button variant="outline" size="icon" className="ml-auto h-8 w-8">
                 <Bell className="h-4 w-4" />
