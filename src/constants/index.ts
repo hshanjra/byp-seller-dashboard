@@ -34,11 +34,11 @@ export const ProductStatusOptions = ["ACTIVE", "INACTIVE"];
 
 export const OnboardingFormDefaultValues = {
   accountType: AccountTypeOptions[0] as any,
-  dateOfBirth: new Date(),
+  dateOfBirth: undefined,
   ssn: "",
   businessName: "",
   businessLicense: "",
-  businessLicenseExp: new Date(),
+  businessLicenseExp: undefined,
   ein: "",
   street: "",
   city: "",

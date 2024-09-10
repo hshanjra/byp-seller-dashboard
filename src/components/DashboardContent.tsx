@@ -1,5 +1,8 @@
 import { cn } from "@/lib/utils";
 import React from "react";
+import { useAuth } from "./AuthProvider";
+import EmailNotVerified from "./notifications/EmailNotVerified";
+import AccountNotVerified from "./notifications/AccountNotVerified";
 
 function DashboardContent({
   children,
@@ -12,6 +15,18 @@ function DashboardContent({
   title?: string;
   actionButtons?: React.ReactNode;
 }) {
+  const { currentUser } = useAuth();
+
+  // Check if current user email is verified or not
+  if (currentUser?.isEmailVerified === false) {
+    return <EmailNotVerified />;
+  }
+
+  // Check if user is verified as seller or not
+  if (currentUser?.merchantVerificationStatus === "PENDING") {
+    return <AccountNotVerified />;
+  }
+
   return (
     <section>
       <div className="flex items-center justify-between mb-5">

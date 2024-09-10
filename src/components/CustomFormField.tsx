@@ -110,13 +110,13 @@ const RenderInput = ({
         <FormControl>
           <PhoneInput
             defaultCountry="US"
-            countries={["US"]}
+            countries={["US", "CA", "IN"]}
             placeholder={props.placeholder}
             addInternationalOption={false}
             // withCountryCallingCode
             value={field.value as E164Number | undefined}
             onChange={field.onChange}
-            className="h-11 border-input rounded-md px-2"
+            className="h-11 border-input border rounded-md px-2 group"
           />
         </FormControl>
       );
@@ -147,7 +147,7 @@ const RenderInput = ({
               timeInputLabel="Time:"
               dateFormat={props.dateFormat ?? "MM/dd/yyyy"}
               wrapperClassName="date-picker"
-              className="border-input rounded-md px-3 h-7 text-sm"
+              className="border-input border rounded-md px-3 h-11 text-sm"
               placeholderText={props.placeholder}
             />
           </FormControl>
@@ -186,6 +186,7 @@ const RenderInput = ({
                 {...field}
                 type={showPassword ? "text" : "password"}
                 maxLength={props.maxLength}
+                autoComplete="current-password"
               />
 
               <button
@@ -221,6 +222,7 @@ const RenderInput = ({
               {...field}
               maxLength={props.maxLength}
               className="h-11"
+              autoComplete="email"
             />
           </FormControl>
         </div>

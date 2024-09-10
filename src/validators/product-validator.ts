@@ -100,7 +100,7 @@ export const createProductSchema = z
     if (data.salePrice && data.salePrice >= data.regularPrice) {
       ctx.addIssue({
         code: "custom",
-        message: "Sale price cannot be greater than or equal regular price",
+        message: "Sale price cannot be greater than or equal to regular price",
         path: ["salePrice"],
       });
     }

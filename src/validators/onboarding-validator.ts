@@ -1,13 +1,14 @@
 import { z } from "zod";
+import validator from "validator";
 
 export const OnboardingSchema = z
   .object({
     accountType: z.enum(["BUSINESS", "INDIVIDUAL"]).default("BUSINESS"),
-    dateOfBirth: z.date(),
+    dateOfBirth: z.date().optional(),
     ssn: z.string().max(9, "Enter valid social security number (SSN)"),
     businessName: z.string().max(100, "Business name is too long"),
     businessLicense: z.string().optional(),
-    businessLicenseExp: z.date().optional(),
+    businessLicenseExp: z.coerce.date().optional(),
     ein: z.string().max(9, "Enter valid EIN"),
     street: z.string().min(1, "Street is required"),
     city: z.string().min(1, "City is required"),
@@ -19,7 +20,13 @@ export const OnboardingSchema = z
       .min(5, "Store name is too short, at least 5 characters are required")
       .max(100, "Store name is too long"),
     businessEmail: z.string().optional(),
-    businessPhone: z.string().max(12, "Phone number is too long").optional(),
+    businessPhone: z
+      .string()
+      .max(14, "Phone number is too long")
+      .optional()
+      .refine((phone) => phone && validator.isMobilePhone(phone), {
+        message: "Enter valid phone number",
+      }),
     about: z.string().optional(),
     returnPolicy: z.string().optional(),
     shippingPolicy: z.string().optional(),

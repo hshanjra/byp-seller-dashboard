@@ -1,3 +1,5 @@
+import { ProductCondition } from "@/constants";
+
 export interface User {
   id: string;
   firstName: string;
@@ -28,6 +30,7 @@ export type Product = {
     width: number;
   };
   isActive: boolean;
+  isGenericProduct: boolean;
   category: {
     id: string;
     name: string;
@@ -44,7 +47,7 @@ export type Product = {
     url: string;
     alt: string;
   }[];
-  productCondition: string;
+  productCondition: ProductCondition;
   salesCount: number;
   addedToCartCount: number;
   createdAt: Date;

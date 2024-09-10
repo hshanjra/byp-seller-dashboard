@@ -9,6 +9,8 @@ import {
 } from "@/validators/onboarding-validator";
 import {
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
   CircleCheck,
   CircleHelp,
   CircleX,
@@ -50,9 +52,7 @@ const steps = [
     id: "Step 2",
     name: "Business Information",
     fields: [
-      "firstName",
-      "lastName",
-      "email",
+      "accountType",
       "dateOfBirth",
       "ssn",
       "businessName",
@@ -217,7 +217,10 @@ function OnboardingForm() {
           }
         )}
       >
-        <ol role="list" className="space-y-4 md:flex md:space-x-8 md:space-y-0">
+        <ol
+          role="list"
+          className="space-y-4 list-none md:flex md:space-x-8 md:space-y-0"
+        >
           {steps.map((step, index) => (
             <li key={step.name} className="md:flex-1">
               {currentStep > index ? (
@@ -260,392 +263,26 @@ function OnboardingForm() {
       {/* <Separator className="mt-5" /> */}
 
       {/* Form */}
-      <Form {...form}>
-        <form
-          className="mt-8 py-8"
-          onSubmit={form.handleSubmit(processForm)}
-          autoComplete="off"
-        >
-          {currentStep === 1 && (
-            <motion.div
-              initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <div className="flex items-center flex-col gap-2 bg-slate-50 mb-3 border max-w-md mx-auto py-3 px-3 rounded-xl">
-                <h3 className="text-md capitalize tracking-wide font-semibold">
-                  Select An Account Type
-                </h3>
-                <CustomFormField
-                  control={form.control}
-                  name="accountType"
-                  fieldType={FormFieldType.SKELETON}
-                  renderSkeleton={(field) => (
-                    <FormControl>
-                      <RadioGroup
-                        className="flex gap-6 items-center justify-center"
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        {AccountTypeOptions.map((option) => (
-                          <div key={option} className="flex items-center gap-2">
-                            <RadioGroupItem value={option} id={option} />
-                            <Label htmlFor={option} className="cursor-pointer">
-                              {option}
-                            </Label>
-                          </div>
-                        ))}
-                      </RadioGroup>
-                    </FormControl>
-                  )}
-                />
-              </div>
-
-              {accountType === "BUSINESS" && (
-                <h3 className="text-base font-semibold leading-7 text-gray-900 text-center">
-                  Continue to register as a business, or if you plan to sell a
-                  large number of goods.
-                </h3>
-              )}
-
-              <Separator className="my-5 opacity-30" />
-
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
-                1. {accountType === "INDIVIDUAL" ? "Personal" : "Business"}{" "}
-                Information
-              </h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Provide your{" "}
-                {accountType === "INDIVIDUAL" ? "personal" : "business"}{" "}
-                details.
-              </p>
-
-              {/* Individual */}
-              {accountType === "INDIVIDUAL" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                >
-                  <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    <div className="sm:col-span-3">
-                      <CustomFormField
-                        fieldType={FormFieldType.INPUT}
-                        control={form.control}
-                        name="ssn"
-                        label="Social Security Number (SSN)*"
-                        placeholder="AAA-GG-SSSS"
-                        maxLength={9}
-                        className="uppercase"
-                      />
-                    </div>
-
-                    <div className="sm:col-span-3">
-                      <CustomFormField
-                        fieldType={FormFieldType.DATE_PICKER}
-                        control={form.control}
-                        name="dateOfBirth"
-                        label="Date of Birth"
-                        placeholder="Select Date"
-                      />
-                    </div>
-
-                    <div className="sm:col-span-3"></div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* Business */}
-              {accountType === "BUSINESS" && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                >
-                  <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                    {/* Business Name/EIN */}
-                    <div className="col-span-full">
-                      <CustomFormField
-                        fieldType={FormFieldType.INPUT}
-                        control={form.control}
-                        name="businessName"
-                        label="Legal Business Name*"
-                        placeholder="Your Legal Business Name"
-                      />
-                    </div>
-
-                    {/* Business License */}
-                    <div className="sm:col-span-3">
-                      <CustomFormField
-                        fieldType={FormFieldType.INPUT}
-                        control={form.control}
-                        name="businessLicense"
-                        label="Business License Number (optional)"
-                      />
-                    </div>
-                    <div className="sm:col-span-3">
-                      <CustomFormField
-                        fieldType={FormFieldType.DATE_PICKER}
-                        control={form.control}
-                        name="businessLicenseExp"
-                        label="Business License Expiration Date (optional)"
-                      />
-                    </div>
-
-                    {/* EIN */}
-                    <div className="col-span-full">
-                      <CustomFormField
-                        fieldType={FormFieldType.INPUT}
-                        control={form.control}
-                        name="ein"
-                        label="Employer Identification Number (EIN)*"
-                        placeholder="12-3456789"
-                        maxLength={9}
-                        inputMode="numeric"
-                      />
-                    </div>
-
-                    {/* Business Email and Phone Number */}
-                    <div className="sm:col-span-3">
-                      <CustomFormField
-                        fieldType={FormFieldType.EMAIL_INPUT}
-                        control={form.control}
-                        name="businessEmail"
-                        label="Business Email*"
-                        placeholder="Enter business email"
-                      />
-                    </div>
-                    <div className="sm:col-span-3">
-                      <CustomFormField
-                        fieldType={FormFieldType.PHONE_INPUT}
-                        control={form.control}
-                        name="businessPhone"
-                        label="Business Phone*"
-                        placeholder="Enter business phone"
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              <Separator className="my-10 opacity-30" />
-
-              {/* Identity Docs */}
-              <div className="col-span-full">
-                <h2
-                  className={cn(
-                    "text-base font-semibold leading-7 text-gray-900"
-                  )}
-                >
-                  2. Identification & verification*
-                </h2>
-                <p className="text-sm my-2">
-                  Please upload scanned copy of your <b>identification</b> or{" "}
-                  <b>business</b> documents (USA Passport, Driver's License,
-                  Photo ID etc.) Max 3 files.
-                </p>
-                <CustomFormField
-                  control={form.control}
-                  fieldType={FormFieldType.SKELETON}
-                  name="identityDocs"
-                  renderSkeleton={(field) => (
-                    <FormControl>
-                      <FileUploader
-                        onChange={field.onChange}
-                        files={field.value}
-                        options={{
-                          maxFiles: 3,
-                          accept: {
-                            "image/png": [".png"],
-                            "image/jpeg": [".jpeg", ".jpg"],
-                          },
-                        }}
-                      />
-                    </FormControl>
-                  )}
-                />
-              </div>
-
-              <Separator className="my-10 opacity-30" />
-              {/* Address fields */}
-              <div>
-                <h2 className="text-base font-semibold leading-7 text-gray-900">
-                  3. Address
-                </h2>
-                <p className="mt-1 text-sm leading-6 text-gray-600">
-                  Address where you can receive mail.
-                </p>
-
-                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                  <div className="sm:col-span-3">
-                    <CustomFormField
-                      fieldType={FormFieldType.SELECT}
-                      control={form.control}
-                      name="country"
-                      label="Country*"
-                      disabled={true}
-                    >
-                      <SelectItem value="United States">
-                        <p>United States</p>
-                      </SelectItem>
-                    </CustomFormField>
-                  </div>
-
-                  <div className="col-span-full">
-                    <CustomFormField
-                      fieldType={FormFieldType.INPUT}
-                      control={form.control}
-                      name="street"
-                      label="Street address*"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-2 sm:col-start-1">
-                    <CustomFormField
-                      fieldType={FormFieldType.INPUT}
-                      control={form.control}
-                      name="city"
-                      label="City*"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <CustomFormField
-                      fieldType={FormFieldType.SELECT}
-                      control={form.control}
-                      name="state"
-                      label="State*"
-                      placeholder="Select a state"
-                    >
-                      {US_STATES.map((state, i) => (
-                        <SelectItem key={i} value={state.value}>
-                          <p>{state.name}</p>
-                        </SelectItem>
-                      ))}
-                    </CustomFormField>
-                  </div>
-
-                  <div className="sm:col-span-2">
-                    <CustomFormField
-                      fieldType={FormFieldType.INPUT}
-                      control={form.control}
-                      name="zip"
-                      label="ZIP / Postal code*"
-                      inputMode="numeric"
-                      placeholder="Your ZIP / Postal code"
-                      maxLength={5}
-                    />
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {currentStep === 2 && (
-            <motion.div
-              initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
-                Store Setup
-              </h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please provide information about your store.
-              </p>
-
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="sm:col-span-3">
-                  <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    control={form.control}
-                    name="displayName"
-                    label="Store Name*"
-                    placeholder="XYZ Parts"
-                    icon={<ShoppingBag />}
-                  />
-
-                  {storeName && storeAvailability === false && (
-                    <div className="text-destructive flex items-center gap-2 mt-2">
-                      <AlertCircle className="h-4 w-4" />
-                      <span className="text-sm">
-                        Store with the same name already exists.
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="sm:col-span-3">
-                  <FormLabel>Store address</FormLabel>
-                  <div className="flex rounded-md border border-zinc-500 mt-2">
-                    <div className="flex items-center p-2">
-                      <Link />
-                    </div>
-                    <Input
-                      name="storeAddress"
-                      // disabled={true}
-                      className="h-11 !cursor-pointer"
-                      title="Click to copy"
-                      value={`${SITE_METADATA.url}/seller/${storeSlug}`}
-                      disabled
-                    />
-                  </div>
-                </div>
-
-                <div className="col-span-full">
-                  <CustomFormField
-                    fieldType={FormFieldType.TEXTAREA}
-                    control={form.control}
-                    name="about"
-                    label="Enter about your store (This will visible on your store page)"
-                    placeholder="We sell only genuine products"
-                  />
-                </div>
-
-                <div className="col-span-full">
-                  <CustomFormField
-                    fieldType={FormFieldType.TEXTAREA}
-                    control={form.control}
-                    name="shippingPolicy"
-                    label="Define your shipping policy terms"
-                    placeholder=""
-                  />
-                </div>
-
-                <div className="col-span-full">
-                  <CustomFormField
-                    fieldType={FormFieldType.TEXTAREA}
-                    control={form.control}
-                    name="returnPolicy"
-                    label="Define your return policy terms"
-                    placeholder=""
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {/* Bank Details */}
-          {currentStep === 3 && (
-            <motion.div
-              initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
-            >
-              <h2 className="text-base font-semibold leading-7 text-gray-900">
-                Bank Details
-              </h2>
-              <p className="mt-1 text-sm leading-6 text-gray-600">
-                Please fill the bank details to receive payments.
-              </p>
-
-              {/* TODO: add debounce and check unique store name, if store is exists show error */}
-              <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
-                <div className="col-span-full">
-                  <FormLabel>Bank Account Type</FormLabel>
+      <div className="mt-8 py-8 overflow-hidden">
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(processForm)}
+            autoComplete="off"
+            className="px-2"
+          >
+            {currentStep === 1 && (
+              <motion.div
+                initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <div className="flex items-center flex-col gap-2 bg-slate-50 mb-3 border max-w-md mx-auto py-3 px-3 rounded-xl">
+                  <h3 className="text-md capitalize tracking-wide font-semibold">
+                    Select An Account Type
+                  </h3>
                   <CustomFormField
                     control={form.control}
-                    name="bankAccountType"
+                    name="accountType"
                     fieldType={FormFieldType.SKELETON}
                     renderSkeleton={(field) => (
                       <FormControl>
@@ -674,205 +311,564 @@ function OnboardingForm() {
                   />
                 </div>
 
-                <div className="sm:col-span-3">
-                  <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    control={form.control}
-                    name="accountHolderName"
-                    label="Account Holder Name*"
-                    placeholder=""
-                  />
-                </div>
-                <div className="sm:col-span-3">
-                  <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    control={form.control}
-                    name="bankName"
-                    label="Bank Name*"
-                    placeholder=""
-                  />
-                </div>
+                {accountType === "BUSINESS" && (
+                  <h3 className="text-base font-semibold leading-7 text-gray-900 text-center">
+                    Continue to register as a business, or if you plan to sell a
+                    large number of goods.
+                  </h3>
+                )}
 
-                <div className="sm:col-span-3">
-                  <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    control={form.control}
-                    name="accountNumber"
-                    label="Account Number*"
-                    placeholder=""
-                  />
-                </div>
+                <Separator className="my-5 opacity-30" />
 
-                <div className="sm:col-span-3">
-                  <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    control={form.control}
-                    name="routingNumber"
-                    // disabled={true}
-                    className="h-11 !cursor-pointer"
-                    label="Bank Routing Number"
-                  />
-                </div>
+                <h2 className="text-base font-semibold leading-7 text-gray-900">
+                  1. {accountType === "INDIVIDUAL" ? "Personal" : "Business"}{" "}
+                  Information
+                </h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Provide your{" "}
+                  {accountType === "INDIVIDUAL" ? "personal" : "business"}{" "}
+                  details.
+                </p>
 
+                {/* Individual */}
+                {accountType === "INDIVIDUAL" && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                  >
+                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                      <div className="sm:col-span-3">
+                        <CustomFormField
+                          fieldType={FormFieldType.INPUT}
+                          control={form.control}
+                          name="ssn"
+                          label="Social Security Number (SSN)*"
+                          placeholder="AAA-GG-SSSS"
+                          maxLength={9}
+                          className="uppercase"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-3">
+                        <CustomFormField
+                          fieldType={FormFieldType.DATE_PICKER}
+                          control={form.control}
+                          name="dateOfBirth"
+                          label="Date of Birth"
+                          placeholder="Select Date"
+                        />
+                      </div>
+
+                      <div className="sm:col-span-3"></div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Business */}
+                {accountType === "BUSINESS" && (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                  >
+                    <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                      {/* Business Name/EIN */}
+                      <div className="col-span-full">
+                        <CustomFormField
+                          fieldType={FormFieldType.INPUT}
+                          control={form.control}
+                          name="businessName"
+                          label="Legal Business Name*"
+                          placeholder="Your Legal Business Name"
+                        />
+                      </div>
+
+                      {/* Business License */}
+                      <div className="sm:col-span-3">
+                        <CustomFormField
+                          fieldType={FormFieldType.INPUT}
+                          control={form.control}
+                          name="businessLicense"
+                          label="Business License Number (optional)"
+                          placeholder="123-456-789"
+                        />
+                      </div>
+                      <div className="sm:col-span-3">
+                        <CustomFormField
+                          fieldType={FormFieldType.DATE_PICKER}
+                          control={form.control}
+                          name="businessLicenseExp"
+                          label="Business License Expiration Date (optional)"
+                          placeholder="Select Date"
+                        />
+                      </div>
+
+                      {/* EIN */}
+                      <div className="col-span-full">
+                        <CustomFormField
+                          fieldType={FormFieldType.INPUT}
+                          control={form.control}
+                          name="ein"
+                          label="Employer Identification Number (EIN)*"
+                          placeholder="12-3456789"
+                          maxLength={9}
+                          inputMode="numeric"
+                        />
+                      </div>
+
+                      {/* Business Email and Phone Number */}
+                      <div className="sm:col-span-3">
+                        <CustomFormField
+                          fieldType={FormFieldType.EMAIL_INPUT}
+                          control={form.control}
+                          name="businessEmail"
+                          label="Business Email*"
+                          placeholder="Enter business email"
+                        />
+                      </div>
+                      <div className="sm:col-span-3">
+                        <CustomFormField
+                          fieldType={FormFieldType.PHONE_INPUT}
+                          control={form.control}
+                          name="businessPhone"
+                          label="Business Phone*"
+                          placeholder="Enter business phone"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                <Separator className="my-10 opacity-30" />
+
+                {/* Identity Docs */}
                 <div className="col-span-full">
+                  <h2
+                    className={cn(
+                      "text-base font-semibold leading-7 text-gray-900"
+                    )}
+                  >
+                    2. Identification & verification*
+                  </h2>
+                  <p className="text-sm my-2">
+                    Please upload scanned copy of your <b>identification</b> or{" "}
+                    <b>business</b> documents (USA Passport, Driver's License,
+                    Photo ID etc.) Max 3 files.
+                  </p>
                   <CustomFormField
-                    fieldType={FormFieldType.INPUT}
                     control={form.control}
-                    name="bankBic"
-                    label="Bank BIC"
-                    placeholder=""
+                    fieldType={FormFieldType.SKELETON}
+                    name="identityDocs"
+                    renderSkeleton={(field) => (
+                      <FormControl>
+                        <FileUploader
+                          onChange={field.onChange}
+                          files={field.value}
+                          options={{
+                            maxFiles: 3,
+                            accept: {
+                              "image/png": [".png"],
+                              "image/jpeg": [".jpeg", ".jpg"],
+                            },
+                          }}
+                        />
+                      </FormControl>
+                    )}
                   />
                 </div>
 
-                <div className="sm:col-span-3">
-                  <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    control={form.control}
-                    name="bankIban"
-                    label="Bank IBAN"
-                    placeholder="BH75QGSP959B311711C75T"
-                  />
-                </div>
+                <Separator className="my-10 opacity-30" />
+                {/* Address fields */}
+                <div>
+                  <h2 className="text-base font-semibold leading-7 text-gray-900">
+                    3. Address
+                  </h2>
+                  <p className="mt-1 text-sm leading-6 text-gray-600">
+                    Address where you can receive mail.
+                  </p>
 
-                <div className="sm:col-span-3">
-                  <CustomFormField
-                    fieldType={FormFieldType.INPUT}
-                    control={form.control}
-                    name="bankSwiftCode"
-                    label="Bank Swift Code"
-                    placeholder=""
-                  />
-                </div>
+                  <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                    <div className="sm:col-span-3">
+                      <CustomFormField
+                        fieldType={FormFieldType.SELECT}
+                        control={form.control}
+                        name="country"
+                        label="Country*"
+                        disabled={true}
+                      >
+                        <SelectItem value="United States">
+                          <p>United States</p>
+                        </SelectItem>
+                      </CustomFormField>
+                    </div>
 
-                <div className="col-span-full">
-                  <CustomFormField
-                    fieldType={FormFieldType.TEXTAREA}
-                    control={form.control}
-                    name="bankAddress"
-                    label="Bank address"
-                    placeholder=""
-                  />
-                </div>
-              </div>
-            </motion.div>
-          )}
+                    <div className="col-span-full">
+                      <CustomFormField
+                        fieldType={FormFieldType.INPUT}
+                        control={form.control}
+                        name="street"
+                        label="Street address*"
+                      />
+                    </div>
 
-          {currentStep === 4 && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-              <div className="flex justify-center flex-col items-center">
-                {/* Success message */}
-                {mutation.isSuccess && (
-                  <div className="w-full rounded-lg p-4 sm:p-6 flex flex-col items-center">
-                    <CircleCheck className="size-16 mb-2 text-sky-600 animate-bounce" />
-                    <h3 className="text-xl font-semibold leading-6 text-sky-600">
-                      Application Submitted Successfully!
-                    </h3>
-                    <p className="text-sm mt-2 text-center text-sky-600">
-                      We'll notify you when your application is approved.
-                      <br /> This usually takes less than 12 hours.
-                    </p>
+                    <div className="sm:col-span-2 sm:col-start-1">
+                      <CustomFormField
+                        fieldType={FormFieldType.INPUT}
+                        control={form.control}
+                        name="city"
+                        label="City*"
+                      />
+                    </div>
 
-                    <Button
-                      asChild
-                      className="mt-5 bg-sky-600 hover:bg-sky-600/90 rounded-full"
-                    >
-                      <a href="/" className="flex items-center gap-x-2">
-                        <House className="size-6" />
-                        Go to dashboard
-                      </a>
-                    </Button>
+                    <div className="sm:col-span-2">
+                      <CustomFormField
+                        fieldType={FormFieldType.SELECT}
+                        control={form.control}
+                        name="state"
+                        label="State*"
+                        placeholder="Select a state"
+                      >
+                        {US_STATES.map((state, i) => (
+                          <SelectItem key={i} value={state.value}>
+                            <p>{state.name}</p>
+                          </SelectItem>
+                        ))}
+                      </CustomFormField>
+                    </div>
+
+                    <div className="sm:col-span-2">
+                      <CustomFormField
+                        fieldType={FormFieldType.INPUT}
+                        control={form.control}
+                        name="zip"
+                        label="ZIP / Postal code*"
+                        inputMode="numeric"
+                        placeholder="Your ZIP / Postal code"
+                        maxLength={5}
+                      />
+                    </div>
                   </div>
-                )}
+                </div>
+              </motion.div>
+            )}
 
-                {/* Error message */}
-                {mutation.isError && (
-                  <div className="w-full rounded-lg p-4 sm:p-6 flex flex-col items-center">
-                    <CircleX className="size-16 mb-2 text-destructive" />
-                    <h3 className="text-xl font-semibold leading-6 text-destructive">
-                      Oops, something went wrong
-                    </h3>
-                    <p className="text-sm mt-2 text-center text-destructive">
-                      Try again, or
-                      <br /> Contact our support if the problem persists.
-                    </p>
-                    <Button
-                      asChild
-                      className="mt-5 bg-destructive hover:bg-destructive/90 rounded-full"
-                    >
-                      <a href="/support" className="flex items-center gap-x-2">
-                        <CircleHelp className="size-6" />
-                        Contact Support
-                      </a>
-                    </Button>
+            {currentStep === 2 && (
+              <motion.div
+                initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <h2 className="text-base font-semibold leading-7 text-gray-900">
+                  Store Setup
+                </h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Please provide information about your store.
+                </p>
+
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="sm:col-span-3">
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="displayName"
+                      label="Store Name*"
+                      placeholder="XYZ Parts"
+                      icon={<ShoppingBag />}
+                    />
+
+                    {storeName && storeAvailability === false && (
+                      <div className="text-destructive flex items-center gap-2 mt-2">
+                        <AlertCircle className="h-4 w-4" />
+                        <span className="text-sm">
+                          Store with the same name already exists.
+                        </span>
+                      </div>
+                    )}
                   </div>
-                )}
 
-                {/* Loading */}
-                {mutation.isPending && (
-                  <div className="w-full rounded-lg p-4 sm:p-6 flex flex-col items-center">
-                    <Loader2 className="text-sky-600 animate-spin size-12" />
-                    <h3 className="text-xl font-semibold leading-6 text-sky-600 mt-2">
-                      Submitting your application...
-                    </h3>
+                  <div className="sm:col-span-3">
+                    <FormLabel>Store address</FormLabel>
+                    <div className="flex rounded-md border border-zinc-500 mt-2">
+                      <div className="flex items-center p-2">
+                        <Link />
+                      </div>
+                      <Input
+                        name="storeAddress"
+                        // disabled={true}
+                        className="h-11 !cursor-pointer !border !border-input"
+                        title="Click to copy"
+                        value={`${SITE_METADATA.url}/seller/${storeSlug}`}
+                        disabled
+                      />
+                    </div>
                   </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </form>
-      </Form>
 
-      {/* Navigation */}
-      <div className="mt-8 pt-5">
-        <div className="flex justify-between">
-          <button
-            type="button"
-            onClick={prev}
-            disabled={
-              currentStep === 1 || mutation.isSuccess || mutation.isPending
-            }
-            className="rounded bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-6 w-6"
+                  <div className="col-span-full">
+                    <CustomFormField
+                      fieldType={FormFieldType.TEXTAREA}
+                      control={form.control}
+                      name="about"
+                      label="Enter about your store (This will visible on your store page)"
+                      placeholder="We sell only genuine products"
+                    />
+                  </div>
+
+                  <div className="col-span-full">
+                    <CustomFormField
+                      fieldType={FormFieldType.TEXTAREA}
+                      control={form.control}
+                      name="shippingPolicy"
+                      label="Define your shipping policy terms"
+                      placeholder=""
+                    />
+                  </div>
+
+                  <div className="col-span-full">
+                    <CustomFormField
+                      fieldType={FormFieldType.TEXTAREA}
+                      control={form.control}
+                      name="returnPolicy"
+                      label="Define your return policy terms"
+                      placeholder=""
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {/* Bank Details */}
+            {currentStep === 3 && (
+              <motion.div
+                initial={{ x: delta >= 0 ? "50%" : "-50%", opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                <h2 className="text-base font-semibold leading-7 text-gray-900">
+                  Bank Details
+                </h2>
+                <p className="mt-1 text-sm leading-6 text-gray-600">
+                  Please fill the bank details to receive payments.
+                </p>
+
+                {/* TODO: add debounce and check unique store name, if store is exists show error */}
+                <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
+                  <div className="col-span-full">
+                    <FormLabel>Bank Account Type</FormLabel>
+                    <CustomFormField
+                      control={form.control}
+                      name="bankAccountType"
+                      fieldType={FormFieldType.SKELETON}
+                      renderSkeleton={(field) => (
+                        <FormControl>
+                          <RadioGroup
+                            className="flex gap-6 items-center justify-center"
+                            onValueChange={field.onChange}
+                            defaultValue={field.value}
+                          >
+                            {AccountTypeOptions.map((option) => (
+                              <div
+                                key={option}
+                                className="flex items-center gap-2"
+                              >
+                                <RadioGroupItem value={option} id={option} />
+                                <Label
+                                  htmlFor={option}
+                                  className="cursor-pointer"
+                                >
+                                  {option}
+                                </Label>
+                              </div>
+                            ))}
+                          </RadioGroup>
+                        </FormControl>
+                      )}
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="accountHolderName"
+                      label="Account Holder Name*"
+                      placeholder=""
+                    />
+                  </div>
+                  <div className="sm:col-span-3">
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="bankName"
+                      label="Bank Name*"
+                      placeholder=""
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="accountNumber"
+                      label="Account Number*"
+                      placeholder=""
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="routingNumber"
+                      // disabled={true}
+                      className="h-11 !cursor-pointer"
+                      label="Bank Routing Number"
+                    />
+                  </div>
+
+                  <div className="col-span-full">
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="bankBic"
+                      label="Bank BIC"
+                      placeholder=""
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="bankIban"
+                      label="Bank IBAN"
+                      placeholder="BH75QGSP959B311711C75T"
+                    />
+                  </div>
+
+                  <div className="sm:col-span-3">
+                    <CustomFormField
+                      fieldType={FormFieldType.INPUT}
+                      control={form.control}
+                      name="bankSwiftCode"
+                      label="Bank Swift Code"
+                      placeholder=""
+                    />
+                  </div>
+
+                  <div className="col-span-full">
+                    <CustomFormField
+                      fieldType={FormFieldType.TEXTAREA}
+                      control={form.control}
+                      name="bankAddress"
+                      label="Bank address"
+                      placeholder=""
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 4 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                <div className="flex justify-center flex-col items-center">
+                  {/* Success message */}
+                  {mutation.isSuccess && (
+                    <div className="w-full rounded-lg p-4 sm:p-6 flex flex-col items-center">
+                      <CircleCheck className="size-16 mb-2 text-sky-600 animate-bounce" />
+                      <h3 className="text-xl font-semibold leading-6 text-sky-600">
+                        Application Submitted Successfully!
+                      </h3>
+                      <p className="text-sm mt-2 text-center text-sky-600">
+                        We'll notify you when your application is approved.
+                        <br /> This usually takes less than 12 hours.
+                      </p>
+
+                      <Button
+                        asChild
+                        className="mt-5 bg-sky-600 hover:bg-sky-600/90 rounded-full"
+                      >
+                        <a href="/" className="flex items-center gap-x-2">
+                          <House className="size-6" />
+                          Go to dashboard
+                        </a>
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Error message */}
+                  {mutation.isError && (
+                    <div className="w-full rounded-lg p-4 sm:p-6 flex flex-col items-center">
+                      <CircleX className="size-16 mb-2 text-destructive" />
+                      <h3 className="text-xl font-semibold leading-6 text-destructive">
+                        Oops, something went wrong
+                      </h3>
+                      <p className="text-sm mt-2 text-center text-destructive">
+                        Try again, or
+                        <br /> Contact our support if the problem persists.
+                      </p>
+                      <Button
+                        asChild
+                        className="mt-5 bg-destructive hover:bg-destructive/90 rounded-full"
+                      >
+                        <a
+                          href="/support"
+                          className="flex items-center gap-x-2"
+                        >
+                          <CircleHelp className="size-6" />
+                          Contact Support
+                        </a>
+                      </Button>
+                    </div>
+                  )}
+
+                  {/* Loading */}
+                  {mutation.isPending && (
+                    <div className="w-full rounded-lg p-4 sm:p-6 flex flex-col items-center">
+                      <Loader2 className="text-sky-600 animate-spin size-12" />
+                      <h3 className="text-xl font-semibold leading-6 text-sky-600 mt-2">
+                        Submitting your application...
+                      </h3>
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </form>
+        </Form>
+
+        {/* Navigation */}
+        <div
+          className={cn("mt-8 p-2", {
+            hidden: currentStep === steps.length - 1,
+          })}
+        >
+          <div className="flex justify-between">
+            <Button
+              type="button"
+              onClick={prev}
+              disabled={
+                currentStep === 1 || mutation.isSuccess || mutation.isPending
+              }
+              className="flex items-center"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15.75 19.5L8.25 12l7.5-7.5"
-              />
-            </svg>
-          </button>
-          <button
-            type="button"
-            onClick={next}
-            disabled={
-              currentStep === steps.length - 1 ||
-              mutation.isSuccess ||
-              mutation.isPending
-            }
-            className="rounded bg-white px-2 py-1 text-sm font-semibold text-sky-900 shadow-sm ring-1 ring-inset ring-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="1.5"
-              stroke="currentColor"
-              className="h-6 w-6"
+              <ChevronLeft />
+              Back
+            </Button>
+            <Button
+              type="button"
+              onClick={next}
+              disabled={
+                currentStep === steps.length - 1 ||
+                mutation.isSuccess ||
+                mutation.isPending
+              }
+              className="rounded flex items-center"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M8.25 4.5l7.5 7.5-7.5 7.5"
-              />
-            </svg>
-          </button>
+              Next
+              <ChevronRight />
+            </Button>
+          </div>
         </div>
       </div>
     </section>

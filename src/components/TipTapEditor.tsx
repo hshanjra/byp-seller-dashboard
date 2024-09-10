@@ -63,7 +63,7 @@ function TipTapEditor(props: TipTapEditorProps) {
     >
       <EditorContent
         editor={editor}
-        className="rounded-md border max-h-72 w-full border-input bg-background p-4 tip-tap-editor focus:ring-0"
+        className="rounded-md border w-full border-input bg-background p-4 tip-tap-editor focus:ring-0"
         name={props.name}
       />
 

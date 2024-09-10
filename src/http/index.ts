@@ -59,7 +59,10 @@ export async function createSellerStore(v: OnboardingFormData) {
   // Append individual fields if accountType is INDIVIDUAL
   if (values.accountType === "INDIVIDUAL") {
     formData.append("SSN", values.ssn);
-    formData.append("dateOfBirth", new Date(values.dateOfBirth).toISOString()); // Convert to ISO string for consistency
+    formData.append(
+      "dateOfBirth",
+      values.dateOfBirth ? new Date(values.dateOfBirth).toISOString() : ""
+    ); // Convert to ISO string for consistency
   }
 
   // Append business fields if accountType is BUSINESS
@@ -84,12 +87,14 @@ export async function createSellerStore(v: OnboardingFormData) {
     });
     if (store) return true;
   } catch (error: any) {
+    // TODO: remove this
+    console.log(error);
     if (error.status === 409) {
       throw new Error("Store with the same name already exists");
     }
 
     if (error.status === 400) {
-      throw new Error("Please check all fields and try again");
+      throw new Error(error.message);
     }
 
     throw error;
@@ -210,6 +215,20 @@ export async function createProduct(
     if (error.status === 400) {
       throw new Error("Please check all fields");
     }
+    throw new Error("Something went wrong");
+  }
+}
+
+// Get Product
+export async function getSingleProduct(productId: string): Promise<Product> {
+  try {
+    const { data } = await api.get(`/seller/products/${productId}`);
+    return data;
+  } catch (error: any) {
+    if (error.status === 404) {
+      throw new Error("Product not found");
+    }
+
     throw new Error("Something went wrong");
   }
 }

@@ -88,6 +88,16 @@
     @apply bg-background text-foreground;
   }
 
+  /* Overwrite phone number input */
+
+  .PhoneInput {
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .PhoneInput .PhoneInputInput {
+    @apply !outline-none border-none;
+  }
+
   /* Tip Tap Editor */
   .tip-tap-editor {
     @apply z-10;
