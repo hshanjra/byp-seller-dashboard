@@ -135,7 +135,7 @@ function AllProducts() {
                 </TableCell>
 
                 <TableCell>
-                  <Badge variant="outline">
+                  <Badge variant={product.isActive ? "outline" : "destructive"}>
                     {product.isActive ? "Active" : "Inactive"}
                   </Badge>
                 </TableCell>
