@@ -30,8 +30,8 @@ import {
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { createProduct, getCategories } from "@/http";
 import {
-  CreateProductsFormDefaultValues,
   ProductConditionOptions,
+  ProductsFormDefaultValues,
   ProductStatusOptions,
   VEHICLE_ATTRIBUTES,
 } from "@/constants";
@@ -50,7 +50,7 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
   const { toast } = useToast();
   const form = useForm<CreateProductSchemaType>({
     resolver: zodResolver(createProductSchema),
-    defaultValues: CreateProductsFormDefaultValues,
+    defaultValues: ProductsFormDefaultValues,
   });
 
   // Mutation

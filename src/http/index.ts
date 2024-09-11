@@ -7,6 +7,8 @@ import {
 import {
   createProductSchema,
   CreateProductSchemaType,
+  updateProductSchema,
+  UpdateProductSchemaType,
 } from "@/validators/product-validator";
 
 // Query to check if store with same slug exists
@@ -50,7 +52,7 @@ export async function createSellerStore(v: OnboardingFormData) {
   formData.append("bankName", values.bankName);
   formData.append("accountHolderName", values.accountHolderName);
   formData.append("accountNumber", values.accountNumber);
-  formData.append("routingNumber", values.routingNumber);
+  formData.append("routingNumber", values.routingNumber.toString());
   formData.append("bankBic", values.bankBic);
   formData.append("bankIban", values.bankIban);
   formData.append("bankSwiftCode", values.bankSwiftCode);
@@ -87,8 +89,6 @@ export async function createSellerStore(v: OnboardingFormData) {
     });
     if (store) return true;
   } catch (error: any) {
-    // TODO: remove this
-    console.log(error);
     if (error.status === 409) {
       throw new Error("Store with the same name already exists");
     }
@@ -145,6 +145,91 @@ export async function createProduct(
   values: CreateProductSchemaType
 ): Promise<Product> {
   const v = createProductSchema.parse(values);
+
+  const formData = buildProductFormData(v);
+
+  try {
+    const { data } = await api.post("/seller/products", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    return data;
+  } catch (error: any) {
+    if (error.status === 400) {
+      throw new Error("Please check all fields");
+    }
+    throw new Error("Something went wrong");
+  }
+}
+
+// Get Product
+export async function getSingleProduct(
+  productId: string
+): Promise<Product | null> {
+  if (!productId) return null;
+  try {
+    const { data } = await api.get(`/seller/products/${productId}`);
+    return data;
+  } catch (error: any) {
+    if (error.status === 404) {
+      throw new Error("Product not found");
+    }
+
+    throw new Error("Something went wrong");
+  }
+}
+
+// Update Product
+export async function updateProduct({
+  productId,
+  values,
+}: {
+  productId: string;
+  values: UpdateProductSchemaType;
+}): Promise<Product> {
+  const v = updateProductSchema.parse(values);
+
+  const formData = buildProductFormData(v);
+  try {
+    const { data } = await api.patch(
+      `/seller/products/${productId}`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    return data;
+  } catch (error: any) {
+    // Remove this
+
+    console.log(error);
+    if (error.status === 400) {
+      throw new Error("Please check all fields");
+    }
+    throw new Error("Something went wrong");
+  }
+}
+
+// Delete Product
+export async function deleteProduct(productId: string): Promise<boolean> {
+  try {
+    await api.delete(`/seller/products/${productId}`);
+    return true;
+  } catch (error: any) {
+    if (error.status === 404) {
+      throw new Error("Product not found");
+    }
+    throw new Error("Error deleting product");
+  }
+}
+
+// Build Product Details
+export function buildProductFormData(v: CreateProductSchemaType) {
   const formData: FormData = new FormData();
 
   // Append images if they exist
@@ -203,45 +288,5 @@ export async function createProduct(
     }
   }
 
-  try {
-    const { data } = await api.post("/seller/products", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    return data;
-  } catch (error: any) {
-    if (error.status === 400) {
-      throw new Error("Please check all fields");
-    }
-    throw new Error("Something went wrong");
-  }
-}
-
-// Get Product
-export async function getSingleProduct(productId: string): Promise<Product> {
-  try {
-    const { data } = await api.get(`/seller/products/${productId}`);
-    return data;
-  } catch (error: any) {
-    if (error.status === 404) {
-      throw new Error("Product not found");
-    }
-
-    throw new Error("Something went wrong");
-  }
-}
-
-// Delete Product
-export async function deleteProduct(productId: string): Promise<boolean> {
-  try {
-    await api.delete(`/seller/products/${productId}`);
-    return true;
-  } catch (error: any) {
-    if (error.status === 404) {
-      throw new Error("Product not found");
-    }
-    throw new Error("Error deleting product");
-  }
+  return formData;
 }

@@ -51,6 +51,14 @@ export type Product = {
   salesCount: number;
   addedToCartCount: number;
   createdAt: Date;
+
+  compatibleWith?: {
+    vehicleMake?: string;
+    vehicleModel?: Array<string>;
+    vehicleSubmodel?: Array<string>;
+    vehicleTrim?: Array<string>;
+    vehicleYear?: Array<number>;
+  };
 };
 
 export type Category = {

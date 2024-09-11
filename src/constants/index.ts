@@ -57,7 +57,7 @@ export const OnboardingFormDefaultValues = {
   bankName: "",
   accountHolderName: "",
   accountNumber: "",
-  routingNumber: "",
+  routingNumber: undefined,
   bankBic: "",
   bankIban: "",
   bankSwiftCode: "",
@@ -75,7 +75,7 @@ export enum ProductCondition {
   REFURBISHED = "REFURBISHED",
 }
 
-export const CreateProductsFormDefaultValues = {
+export const ProductsFormDefaultValues = {
   productTitle: "",
   metaTitle: "",
   metaDescription: "",

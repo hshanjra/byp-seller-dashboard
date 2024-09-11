@@ -24,13 +24,14 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import CustomFormField from "../CustomFormField";
 import { FormFieldType } from "@/constants/form";
 import {
-  createProductSchema,
-  CreateProductSchemaType,
+  updateProductSchema,
+  UpdateProductSchemaType,
 } from "@/validators/product-validator";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createProduct, getCategories, getSingleProduct } from "@/http";
+import { updateProduct, getCategories, getSingleProduct } from "@/http";
 import {
   ProductConditionOptions,
+  ProductsFormDefaultValues,
   ProductStatusOptions,
   VEHICLE_ATTRIBUTES,
 } from "@/constants";
@@ -41,6 +42,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import ParentLoader from "../ParentLoader";
 import { Product } from "@/types";
+import UploadedImagesPreview from "../UploadedImagesPreview";
 
 interface CreateProductFormProps {
   title?: string;
@@ -48,64 +50,67 @@ interface CreateProductFormProps {
   product: Product;
 }
 
-function EditProductForm({
-  title,
-  buttonTitle,
-  product,
-}: CreateProductFormProps) {
+function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
   const navigate = useNavigate();
   const { productId } = useParams();
   const { toast } = useToast();
-
-  // Get product
-  // const {
-  //   data: product,
-  //   isLoading: productLoading,
-  //   error: productError,
-  // } = useQuery({
-  //   queryKey: ["product", productId],
-  //   queryFn: async () => await getSingleProduct(productId!),
-  //   enabled: !!productId,
-  //   retry: false,
-  // });
 
   // Handle product error
   useEffect(() => {
     if (!productId) return navigate("/products", { replace: true });
   }, [navigate, productId]);
 
-  // Product Form
-  const form = useForm<CreateProductSchemaType>({
-    resolver: zodResolver(createProductSchema),
-    defaultValues: {
-      isActive: product?.isActive ? "ACTIVE" : "INACTIVE",
-      isGenericProduct: product?.isGenericProduct ?? false,
-      productTitle: product?.productTitle ?? "",
-      longDescription: product?.longDescription ?? "",
-      shortDescription: product?.shortDescription ?? "",
-      productBrand: product?.productBrand ?? "",
-      keywords: product?.keywords ?? "",
-      partNumber: product?.partNumber ?? "",
-      sku: product?.sku ?? "",
-      productLength: product?.productDimensions.length ?? 0,
-      productWidth: product?.productDimensions.width ?? 0,
-      productHeight: product?.productDimensions.height ?? 0,
-      category: product?.category.id ?? "",
-      productStock: product?.productStock ?? 0,
-      regularPrice: product?.regularPrice ?? 0,
-      salePrice: product?.salePrice ?? 0,
-      shippingPrice: product?.shippingPrice ?? 0,
-      productCondition: product?.productCondition ?? "NEW",
-      metaTitle: product?.metaTitle ?? "",
-      metaDescription: product?.metaDescription ?? "",
-      images: [],
-    },
+  // Get product
+  const { data: product, error: productError } = useQuery({
+    queryKey: ["product", productId],
+    enabled: !!productId,
+    queryFn: async () => await getSingleProduct(productId!),
   });
+
+  // Product Form
+  const form = useForm<UpdateProductSchemaType>({
+    resolver: zodResolver(updateProductSchema),
+    defaultValues: ProductsFormDefaultValues,
+  });
+
+  // Update form values when product data is loaded
+  useEffect(() => {
+    if (productError) return navigate("/products", { replace: true });
+
+    if (product) {
+      form.reset({
+        isActive: product.isActive ? "ACTIVE" : "INACTIVE",
+        isGenericProduct: product.isGenericProduct,
+        productTitle: product.productTitle,
+        longDescription: product.longDescription,
+        shortDescription: product.shortDescription,
+        productBrand: product.productBrand,
+        keywords: product.keywords,
+        partNumber: product.partNumber,
+        sku: product.sku,
+        productLength: product.productDimensions?.length ?? 0,
+        productWidth: product.productDimensions?.width ?? 0,
+        productHeight: product.productDimensions?.height ?? 0,
+        category: product.category?.id ?? "",
+        productStock: product.productStock ?? 0,
+        regularPrice: product.regularPrice ?? 0,
+        salePrice: product.salePrice ?? 0,
+        shippingPrice: product.shippingPrice ?? 0,
+        productCondition: product.productCondition ?? "NEW",
+        metaTitle: product.metaTitle ?? "",
+        metaDescription: product.metaDescription ?? "",
+        compatibleMake: product.compatibleWith?.vehicleMake ?? "",
+        compatibleModels: product.compatibleWith?.vehicleModel ?? [],
+        compatibleSubmodels: product.compatibleWith?.vehicleSubmodel ?? [],
+        compatibleYears: product.compatibleWith?.vehicleYear ?? [],
+      });
+    }
+  }, [product, form, productError, navigate]);
 
   // Mutation
   const mutation = useMutation({
     mutationKey: ["createProduct"],
-    mutationFn: createProduct,
+    mutationFn: updateProduct,
     onError: (err) => {
       toast({
         title: "Error",
@@ -117,7 +122,7 @@ function EditProductForm({
     onSuccess: (data) => {
       toast({
         title: "Success",
-        description: `${data.productTitle} created successfully.`,
+        description: `${data.productTitle} updated successfully.`,
         variant: "success",
       });
 
@@ -125,8 +130,9 @@ function EditProductForm({
     },
   });
 
-  const handleProductFormSubmit = async (values: CreateProductSchemaType) => {
-    mutation.mutate(values);
+  const handleProductFormSubmit = async (values: UpdateProductSchemaType) => {
+    if (!productId) return;
+    mutation.mutate({ productId, values });
   };
 
   // Fetch categories
@@ -296,6 +302,11 @@ function EditProductForm({
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
+                  {/* Uploaded Images Preview */}
+                  <UploadedImagesPreview
+                    images={product?.productImages}
+                    productId={productId}
+                  />
                   <CustomFormField
                     control={form.control}
                     fieldType={FormFieldType.SKELETON}
@@ -304,9 +315,10 @@ function EditProductForm({
                       <FormControl>
                         <ProductImagesUploader
                           onChange={field.onChange}
-                          files={field.value}
+                          files={field.value || []}
                           options={{
-                            maxFiles: 12,
+                            maxFiles:
+                              12 - (product?.productImages || []).length,
                             accept: {
                               "image/png": [".png"],
                               "image/jpeg": [".jpeg", ".jpg"],

@@ -711,7 +711,8 @@ function OnboardingForm() {
                       control={form.control}
                       name="accountNumber"
                       label="Account Number*"
-                      placeholder=""
+                      placeholder="123456789"
+                      inputMode="numeric"
                     />
                   </div>
 
@@ -720,9 +721,12 @@ function OnboardingForm() {
                       fieldType={FormFieldType.INPUT}
                       control={form.control}
                       name="routingNumber"
+                      inputMode="numeric"
                       // disabled={true}
                       className="h-11 !cursor-pointer"
                       label="Bank Routing Number"
+                      maxLength={9}
+                      placeholder="007400078"
                     />
                   </div>
 

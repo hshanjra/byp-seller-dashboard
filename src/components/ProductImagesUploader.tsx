@@ -1,44 +1,65 @@
+import { cn } from "@/lib/utils";
 import { Upload, X } from "lucide-react";
+import { useCallback, useEffect } from "react";
 import { DropzoneOptions, useDropzone } from "react-dropzone";
-import { useCallback } from "react";
-import { cn, convertFileToUrl } from "@/lib/utils";
 
-type ImagesUploaderProps = {
-  files: File[] | undefined;
-  onChange: (files: File[]) => void;
-  options?: DropzoneOptions;
+// Extend the File type to include a preview property
+type UploadedFile = File & {
+  preview: string; // URL for previewing the image
+};
+
+// type ExistingFile = {
+//   url: string; // URL for an existing image
+//   alt?: string; // Optional alt if you need to reference the image for deletion
+// };
+type FileUploaderProps = {
+  onChange: (files: UploadedFile[]) => void;
+  files: UploadedFile[];
+  options: DropzoneOptions;
 };
 
 function ProductImagesUploader({
   files,
   onChange,
   options,
-}: ImagesUploaderProps) {
+}: FileUploaderProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
-      // check if user has already uploaded files then push new files and update the images array
-      if (files) {
-        const updatedFiles = [...files, ...acceptedFiles];
-        onChange(updatedFiles);
-      } else {
-        onChange(acceptedFiles);
-      }
+      const newFiles = acceptedFiles.map(
+        (file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          }) as UploadedFile
+      );
+      onChange([...newFiles]); // Add new files to the existing ones
     },
-    [files, onChange]
+    [onChange]
   );
+
+  const handleRemove = (
+    event: React.MouseEvent,
+    fileToRemove: UploadedFile
+  ) => {
+    event.stopPropagation();
+    const updatedFiles = files.filter((file) => file !== fileToRemove);
+    onChange(updatedFiles);
+  };
+
+  useEffect(() => {
+    return () => {
+      files.forEach((file) => {
+        if ("preview" in file) {
+          URL.revokeObjectURL(file.preview);
+        }
+      });
+    };
+  }, [files]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     ...options,
+    maxSize: 2000000,
   });
-
-  const handleRemove = (event: React.MouseEvent, fileToRemove: File) => {
-    event.stopPropagation();
-    if (files) {
-      const updatedFiles = files.filter((file: File) => file !== fileToRemove);
-      onChange(updatedFiles);
-    }
-  };
 
   if (!files || files.length === 0) {
     return (
@@ -47,7 +68,7 @@ function ProductImagesUploader({
           {...getRootProps()}
           type="button"
           className={cn(
-            "flex h-32 w-full items-center justify-center rounded-md border border-dashed",
+            "flex h-40 w-full items-center justify-center rounded-md border border-dashed",
             {
               "border-sky-500 bg-sky-50": isDragActive,
             }
@@ -77,11 +98,12 @@ function ProductImagesUploader({
           {files.map((file) => (
             <div key={file.name} className="relative">
               <img
-                src={convertFileToUrl(file)}
+                src={file.preview}
                 width={400}
                 height={400}
                 alt="Uploaded image"
                 className="max-h-[350px] overflow-hidden object-cover border rounded-lg aspect-square"
+                loading="lazy"
               />
               <button
                 className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1"
@@ -104,35 +126,6 @@ function ProductImagesUploader({
           </button>
         </div>
       )}
-
-      {/* <div className="grid grid-cols-3 gap-2">
-        <button>
-          <img
-            alt="Product img"
-            className="aspect-square w-full rounded-md object-cover"
-            height="84"
-            src="/placeholder.svg"
-            width="84"
-          />
-        </button>
-        <button>
-          <img
-            alt="Product img"
-            className="aspect-square w-full rounded-md object-cover"
-            height="84"
-            src="/placeholder.svg"
-            width="84"
-          />
-        </button>
-        <button
-          className="flex aspect-square w-full items-center justify-center rounded-md border border-dashed"
-          {...getRootProps()}
-        >
-          <Upload className="h-4 w-4 text-muted-foreground" />
-          <span className="sr-only">Upload</span>
-          <input {...getInputProps()} />
-        </button>
-      </div> */}
     </div>
   );
 }

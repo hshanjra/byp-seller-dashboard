@@ -45,7 +45,8 @@ export const OnboardingSchema = z
       .string()
       .min(1, "Account number is required")
       .max(100, "Account number is too long"),
-    routingNumber: z.string().max(100, "Routing number is too long"),
+    routingNumber: z.coerce.number().min(9, "Enter valid routing number"),
+    // .max(9, "Routing number should not be greater than 9 digits"),
     bankBic: z.string().max(100, "Bank BIC is too long"),
     bankIban: z.string().max(100, "Bank IBAN is too long"),
     bankSwiftCode: z.string().max(100, "Bank Swift code is too long"),
