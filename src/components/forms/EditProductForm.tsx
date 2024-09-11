@@ -41,13 +41,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import ParentLoader from "../ParentLoader";
-import { Product } from "@/types";
 import UploadedImagesPreview from "../UploadedImagesPreview";
 
 interface CreateProductFormProps {
   title?: string;
   buttonTitle?: string;
-  product: Product;
 }
 
 function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
