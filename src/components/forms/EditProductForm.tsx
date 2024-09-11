@@ -99,10 +99,11 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
         productCondition: product.productCondition ?? "NEW",
         metaTitle: product.metaTitle ?? "",
         metaDescription: product.metaDescription ?? "",
-        compatibleMake: product.compatibleWith?.vehicleMake ?? "",
-        compatibleModels: product.compatibleWith?.vehicleModel ?? [],
-        compatibleSubmodels: product.compatibleWith?.vehicleSubmodel ?? [],
-        compatibleYears: product.compatibleWith?.vehicleYear ?? [],
+        compatibleMake: product?.compatibleMake ?? "",
+        compatibleModels: product.compatibleModels ?? [],
+        compatibleSubmodels: product.compatibleSubmodels ?? [],
+        compatibleYears:
+          product.compatibleYears?.map((year) => Number(year)) ?? [],
       });
     }
   }, [product, form, productError, navigate]);
@@ -178,20 +179,6 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
 
     return subModels.flat();
   };
-  // Reset form values when selected make changes
-  // useEffect(() => {
-  //   form.reset({
-  //     compatibleMake: selectedMake,
-  //     compatibleModels: [],
-  //     compatibleSubmodels: [],
-  //     compatibleYears: [],
-  //   });
-  // }, [selectedMake, form]);
-
-  // Return loading state
-  if (categoriesLoading) {
-    return <ParentLoader />;
-  }
 
   if (!productId || productId === null) {
     return <ParentLoader />;

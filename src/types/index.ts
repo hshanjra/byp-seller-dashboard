@@ -52,13 +52,11 @@ export type Product = {
   addedToCartCount: number;
   createdAt: Date;
 
-  compatibleWith?: {
-    vehicleMake?: string;
-    vehicleModel?: Array<string>;
-    vehicleSubmodel?: Array<string>;
-    vehicleTrim?: Array<string>;
-    vehicleYear?: Array<number>;
-  };
+  compatibleMake?: string;
+  compatibleModels?: Array<string>;
+  compatibleSubmodels?: Array<string>;
+  compatibleTrim?: Array<string>;
+  compatibleYears?: Array<number>;
 };
 
 export type Category = {

@@ -205,9 +205,6 @@ export async function updateProduct({
 
     return data;
   } catch (error: any) {
-    // Remove this
-
-    console.log(error);
     if (error.status === 400) {
       throw new Error("Please check all fields");
     }
@@ -225,6 +222,35 @@ export async function deleteProduct(productId: string): Promise<boolean> {
       throw new Error("Product not found");
     }
     throw new Error("Error deleting product");
+  }
+}
+
+// Delete A Product Image
+export async function deleteProductImage({
+  productId,
+  imageURL,
+}: {
+  productId: string;
+  imageURL: string;
+}): Promise<boolean> {
+  try {
+    await api.delete(`/seller/products/delete-image`, {
+      data: {
+        productId,
+        imageURL,
+      },
+    });
+    return true;
+  } catch (error: any) {
+    console.log(error);
+    if (error.status === 404) {
+      throw new Error("Product not found");
+    }
+
+    if (error.status === 400) {
+      throw new Error(error.message);
+    }
+    throw new Error("Error deleting image");
   }
 }
 
