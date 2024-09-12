@@ -5,15 +5,13 @@ export const OnboardingSchema = z
   .object({
     accountType: z.enum(["BUSINESS", "INDIVIDUAL"]).default("BUSINESS"),
     dateOfBirth: z.coerce.date().optional(),
-    ssn: z.coerce
-      .number({ message: "Enter valid social security number (SSN)" })
-      .max(9, "Enter valid social security number (SSN)")
-      .optional(),
+    ssn: z.string().optional(),
     businessName: z.string().max(100, "Business name is too long"),
     businessLicense: z.string().optional(),
     businessLicenseExp: z.coerce.date().optional(),
-    ein: z.coerce
-      .number({ message: "Enter valid Employer Identification Number (EIN)" })
+    ein: z
+      .string()
+      // .length(9, "Enter valid Employer Identification Number (EIN)")
       .optional(),
     street: z.string().min(1, "Street is required"),
     city: z.string().min(1, "City is required"),
@@ -24,14 +22,13 @@ export const OnboardingSchema = z
       .string()
       .min(5, "Store name is too short, at least 5 characters are required")
       .max(100, "Store name is too long"),
-    businessEmail: z.string().optional(),
-    businessPhone: z.coerce
-      .number()
-      // .max(16, "Phone number is too long")
-      .optional()
-      .refine((phone) => phone && validator.isMobilePhone(`${phone}`), {
-        message: "Enter valid phone number",
-      }),
+    businessEmail: z.string().email("Invalid business email").optional(),
+    businessPhone: z
+      .string()
+      .refine((phone) => validator.isMobilePhone(phone), {
+        message: "Enter a valid phone number",
+      })
+      .optional(),
     about: z.string().max(450, "About is too long").optional(),
     returnPolicy: z.string().max(1000, "Return policy is too long").optional(),
     shippingPolicy: z
@@ -49,17 +46,20 @@ export const OnboardingSchema = z
       .string()
       .min(1, "Account holder name is required")
       .max(100, "Account holder name is too long"),
-    accountNumber: z.coerce
-      .number({ message: "Enter valid account number" })
-      // .max(100, "Account number is too long")
+    accountNumber: z
+      .string()
+      // .length(20, "Account number should not be greater than 20 digits")
       .optional(),
-    routingNumber: z.coerce
-      .number({ message: "Enter valid routing number" })
-      // .max(9, "Routing number should not be greater than 9 digits"),
+    routingNumber: z
+      .string()
+      .length(9, "Routing number should be exactly 9 digits")
       .optional(),
-    bankBic: z.string().max(100, "Bank BIC is too long"),
-    bankIban: z.string().max(100, "Bank IBAN is too long"),
-    bankSwiftCode: z.string().max(100, "Bank Swift code is too long"),
+    bankBic: z.string().max(100, "Bank BIC is too long").optional(),
+    bankIban: z.string().max(100, "Bank IBAN is too long").optional(),
+    bankSwiftCode: z
+      .string()
+      .max(100, "Bank Swift code is too long")
+      .optional(),
     bankAddress: z
       .string()
       .min(1, "Bank address is required")
@@ -83,7 +83,16 @@ export const OnboardingSchema = z
       });
     }
 
-    if (data.accountNumber && data.accountNumber.toString().length > 20) {
+    // Account number must be a number
+    if (data.accountNumber && isNaN(data.accountNumber as any)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Account number must be a number",
+        path: ["accountNumber"],
+      });
+    }
+
+    if (data.accountNumber && data.accountNumber?.length > 20) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Account number should not be greater than 20 digits",
@@ -99,29 +108,16 @@ export const OnboardingSchema = z
       });
     }
 
-    if (data.routingNumber && data.routingNumber.toString().length < 9) {
+    // Routing number must be a number
+    if (data.routingNumber && isNaN(data.routingNumber as any)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        message: "Routing number should not be less than 9 digits",
+        message: "Routing number must be a number",
         path: ["routingNumber"],
       });
     }
 
     if (data.accountType === "BUSINESS") {
-      // if (!data.businessLicense) {
-      //   ctx.addIssue({
-      //     code: z.ZodIssueCode.custom,
-      //     message: "Business license is required",
-      //     path: ["businessLicense"],
-      //   });
-      // }
-      // if (!data.businessLicenseExp) {
-      //   ctx.addIssue({
-      //     code: z.ZodIssueCode.custom,
-      //     message: "Business license expiration date is required",
-      //     path: ["businessLicenseExp"],
-      //   });
-      // }
       if (!data.ein) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -130,10 +126,20 @@ export const OnboardingSchema = z
         });
       }
 
-      if (data.ein && data.ein.toString().length !== 9) {
+      if (data.ein?.length !== 9) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Enter valid employer identification number",
+          message:
+            "Employer Identification Number (EIN) should be exactly 9 digits",
+          path: ["ein"],
+        });
+      }
+
+      // Check if ein is a number
+      if (data.ein && isNaN(data.ein as any)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Employer Identification Number (EIN) must be a number",
           path: ["ein"],
         });
       }
@@ -150,14 +156,6 @@ export const OnboardingSchema = z
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Business email is required",
-          path: ["businessEmail"],
-        });
-      } else if (
-        z.string().email().safeParse(data.businessEmail).success === false
-      ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Invalid business email",
           path: ["businessEmail"],
         });
       }
@@ -179,10 +177,20 @@ export const OnboardingSchema = z
           path: ["ssn"],
         });
       }
-      if (data.ssn && data.ssn.toString().length !== 9) {
+
+      if (data.ssn?.length !== 9) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
-          message: "Enter valid social security number (SSN)",
+          message: "Social security number (SSN) should be exactly 9 digits",
+          path: ["ssn"],
+        });
+      }
+
+      // Check if ein is a number
+      if (data.ssn && isNaN(data.ssn as any)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Social security number (SSN) must be a number",
           path: ["ssn"],
         });
       }

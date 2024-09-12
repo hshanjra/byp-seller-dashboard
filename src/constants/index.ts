@@ -33,33 +33,34 @@ export const ProductConditionOptions = ["NEW", "USED", "REFURBISHED"];
 export const ProductStatusOptions = ["ACTIVE", "INACTIVE"];
 
 export const OnboardingFormDefaultValues = {
-  accountType: AccountTypeOptions[0] as any,
-  // dateOfBirth: undefined,
-  // ssn: 0,
-  businessName: "",
-  businessLicense: "",
-  // ein: undefined,
-  street: "",
-  city: "",
-  state: "",
-  zip: "",
-  country: "United States",
-  displayName: "",
-  businessEmail: "",
-  // businessPhone: undefined,
-  about: "",
-  returnPolicy: "",
-  shippingPolicy: "",
-  identityDocs: [],
-  bankAccountType: AccountTypeOptions[0] as any,
-  bankName: "",
-  accountHolderName: "",
-  // accountNumber: undefined,
-  // routingNumber: undefined,
-  bankBic: "",
-  bankIban: "",
-  bankSwiftCode: "",
-  bankAddress: "",
+  accountType: AccountTypeOptions[0] as any, // Default is "BUSINESS" as per the schema
+  dateOfBirth: undefined, // Optional field, set to undefined
+  ssn: undefined, // Optional field, set to undefined
+  businessName: "", // Required field, default to empty string
+  businessLicense: "", // Optional field
+  businessLicenseExp: undefined, // Optional field, set to undefined
+  ein: undefined, // Optional but required for "BUSINESS"
+  street: "", // Required field
+  city: "", // Required field
+  state: "", // Required field
+  zip: "", // Required field
+  country: "United States", // Default to United States
+  displayName: "", // Required, default to empty string
+  businessEmail: "", // Optional but required for "BUSINESS"
+  businessPhone: undefined, // Optional but required for "BUSINESS"
+  about: "", // Optional
+  returnPolicy: "", // Optional
+  shippingPolicy: "", // Optional
+  identityDocs: [], // Required, default to empty array
+  bankAccountType: AccountTypeOptions[0] as any, // Default is "BUSINESS"
+  bankName: "", // Required field
+  accountHolderName: "", // Required field
+  accountNumber: undefined, // Optional field
+  routingNumber: undefined, // Optional field
+  bankBic: "", // Optional field
+  bankIban: "", // Optional field
+  bankSwiftCode: "", // Optional field
+  bankAddress: "", // Required field
 };
 
 export enum StatusOptions {
