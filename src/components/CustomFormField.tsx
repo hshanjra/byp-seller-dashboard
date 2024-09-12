@@ -73,8 +73,8 @@ const RenderInput = ({
           )}
           <FormControl>
             <Input
-              placeholder={props.placeholder}
               {...field}
+              placeholder={props.placeholder}
               maxLength={props.maxLength}
               disabled={props.disabled || props.isLoading}
               defaultValue={props.value}

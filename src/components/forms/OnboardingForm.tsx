@@ -53,14 +53,14 @@ const steps = [
     name: "Business Information",
     fields: [
       "accountType",
-      "dateOfBirth",
-      "ssn",
       "businessName",
+      "businessLicense",
+      "businessLicenseExp",
       "ein",
       "businessEmail",
       "businessPhone",
-      "businessLicense",
-      "businessLicenseExp",
+      "dateOfBirth",
+      "ssn",
       "street",
       "city",
       "state",
@@ -344,7 +344,7 @@ function OnboardingForm() {
                           control={form.control}
                           name="ssn"
                           label="Social Security Number (SSN)*"
-                          placeholder="AAA-GG-SSSS"
+                          placeholder="123-45-6789"
                           maxLength={9}
                           className="uppercase"
                         />
@@ -723,7 +723,6 @@ function OnboardingForm() {
                       name="routingNumber"
                       inputMode="numeric"
                       // disabled={true}
-                      className="h-11 !cursor-pointer"
                       label="Bank Routing Number"
                       maxLength={9}
                       placeholder="007400078"

@@ -4,12 +4,17 @@ import validator from "validator";
 export const OnboardingSchema = z
   .object({
     accountType: z.enum(["BUSINESS", "INDIVIDUAL"]).default("BUSINESS"),
-    dateOfBirth: z.date().optional(),
-    ssn: z.string().max(9, "Enter valid social security number (SSN)"),
+    dateOfBirth: z.coerce.date().optional(),
+    ssn: z.coerce
+      .number({ message: "Enter valid social security number (SSN)" })
+      .max(9, "Enter valid social security number (SSN)")
+      .optional(),
     businessName: z.string().max(100, "Business name is too long"),
     businessLicense: z.string().optional(),
     businessLicenseExp: z.coerce.date().optional(),
-    ein: z.string().max(9, "Enter valid EIN"),
+    ein: z.coerce
+      .number({ message: "Enter valid Employer Identification Number (EIN)" })
+      .optional(),
     street: z.string().min(1, "Street is required"),
     city: z.string().min(1, "City is required"),
     state: z.string().min(1, "State is required"),
@@ -20,16 +25,19 @@ export const OnboardingSchema = z
       .min(5, "Store name is too short, at least 5 characters are required")
       .max(100, "Store name is too long"),
     businessEmail: z.string().optional(),
-    businessPhone: z
-      .string()
-      .max(14, "Phone number is too long")
+    businessPhone: z.coerce
+      .number()
+      // .max(16, "Phone number is too long")
       .optional()
-      .refine((phone) => phone && validator.isMobilePhone(phone), {
+      .refine((phone) => phone && validator.isMobilePhone(`${phone}`), {
         message: "Enter valid phone number",
       }),
-    about: z.string().optional(),
-    returnPolicy: z.string().optional(),
-    shippingPolicy: z.string().optional(),
+    about: z.string().max(450, "About is too long").optional(),
+    returnPolicy: z.string().max(1000, "Return policy is too long").optional(),
+    shippingPolicy: z
+      .string()
+      .max(1000, "Shipping policy is too long")
+      .optional(),
     identityDocs: z.custom<File[]>(),
     // Bank Details
     bankAccountType: z.enum(["INDIVIDUAL", "BUSINESS"]).default("BUSINESS"),
@@ -41,12 +49,14 @@ export const OnboardingSchema = z
       .string()
       .min(1, "Account holder name is required")
       .max(100, "Account holder name is too long"),
-    accountNumber: z
-      .string()
-      .min(1, "Account number is required")
-      .max(100, "Account number is too long"),
-    routingNumber: z.coerce.number().min(9, "Enter valid routing number"),
-    // .max(9, "Routing number should not be greater than 9 digits"),
+    accountNumber: z.coerce
+      .number({ message: "Enter valid account number" })
+      // .max(100, "Account number is too long")
+      .optional(),
+    routingNumber: z.coerce
+      .number({ message: "Enter valid routing number" })
+      // .max(9, "Routing number should not be greater than 9 digits"),
+      .optional(),
     bankBic: z.string().max(100, "Bank BIC is too long"),
     bankIban: z.string().max(100, "Bank IBAN is too long"),
     bankSwiftCode: z.string().max(100, "Bank Swift code is too long"),
@@ -61,6 +71,39 @@ export const OnboardingSchema = z
         code: z.ZodIssueCode.custom,
         message: "Identity documents are required",
         path: ["identityDocs"],
+      });
+    }
+
+    // Bank Details
+    if (!data.accountNumber) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Account number is required",
+        path: ["accountNumber"],
+      });
+    }
+
+    if (data.accountNumber && data.accountNumber.toString().length > 20) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Account number should not be greater than 20 digits",
+        path: ["accountNumber"],
+      });
+    }
+
+    if (!data.routingNumber) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Routing number is required",
+        path: ["routingNumber"],
+      });
+    }
+
+    if (data.routingNumber && data.routingNumber.toString().length < 9) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Routing number should not be less than 9 digits",
+        path: ["routingNumber"],
       });
     }
 
@@ -87,7 +130,7 @@ export const OnboardingSchema = z
         });
       }
 
-      if (data.ein.length !== 9) {
+      if (data.ein && data.ein.toString().length !== 9) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Enter valid employer identification number",
@@ -136,7 +179,7 @@ export const OnboardingSchema = z
           path: ["ssn"],
         });
       }
-      if (data.ssn.length !== 9) {
+      if (data.ssn && data.ssn.toString().length !== 9) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Enter valid social security number (SSN)",

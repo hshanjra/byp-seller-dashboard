@@ -51,8 +51,8 @@ export async function createSellerStore(v: OnboardingFormData) {
   formData.append("bankAccountType", values.bankAccountType);
   formData.append("bankName", values.bankName);
   formData.append("accountHolderName", values.accountHolderName);
-  formData.append("accountNumber", values.accountNumber);
-  formData.append("routingNumber", values.routingNumber.toString());
+  formData.append("accountNumber", values.accountNumber?.toString() || "");
+  formData.append("routingNumber", values.routingNumber?.toString() || "");
   formData.append("bankBic", values.bankBic);
   formData.append("bankIban", values.bankIban);
   formData.append("bankSwiftCode", values.bankSwiftCode);
@@ -60,7 +60,7 @@ export async function createSellerStore(v: OnboardingFormData) {
 
   // Append individual fields if accountType is INDIVIDUAL
   if (values.accountType === "INDIVIDUAL") {
-    formData.append("SSN", values.ssn);
+    formData.append("SSN", values.ssn?.toString() || "");
     formData.append(
       "dateOfBirth",
       values.dateOfBirth ? new Date(values.dateOfBirth).toISOString() : ""
@@ -69,10 +69,10 @@ export async function createSellerStore(v: OnboardingFormData) {
 
   // Append business fields if accountType is BUSINESS
   if (values.accountType === "BUSINESS") {
-    formData.append("EIN", values.ein || "");
+    formData.append("EIN", values?.ein?.toString() || "");
     formData.append("businessName", values.businessName || "");
     formData.append("businessEmail", values.businessEmail || "");
-    formData.append("businessPhone", values.businessPhone || "");
+    formData.append("businessPhone", values.businessPhone?.toString() || "");
     formData.append("businessLicense", values.businessLicense || "");
     formData.append(
       "businessLicenseExp",
@@ -89,6 +89,7 @@ export async function createSellerStore(v: OnboardingFormData) {
     });
     if (store) return true;
   } catch (error: any) {
+    console.log(error);
     if (error.status === 409) {
       throw new Error("Store with the same name already exists");
     }
