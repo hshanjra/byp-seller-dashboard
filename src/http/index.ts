@@ -53,9 +53,9 @@ export async function createSellerStore(v: OnboardingFormData) {
   formData.append("accountHolderName", values.accountHolderName);
   formData.append("accountNumber", values.accountNumber?.toString() || "");
   formData.append("routingNumber", values.routingNumber?.toString() || "");
-  formData.append("bankBic", values.bankBic);
-  formData.append("bankIban", values.bankIban);
-  formData.append("bankSwiftCode", values.bankSwiftCode);
+  formData.append("bankBic", values.bankBic || "");
+  formData.append("bankIban", values.bankIban || "");
+  formData.append("bankSwiftCode", values.bankSwiftCode || "");
   formData.append("bankAddress", values.bankAddress);
 
   // Append individual fields if accountType is INDIVIDUAL
