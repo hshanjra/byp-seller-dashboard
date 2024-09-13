@@ -23,6 +23,8 @@ export const SITE_METADATA = {
   },
 };
 
+export const FRONTEND_URL = import.meta.env.VITE_FRONTEND_URL;
+
 export const AccountTypeOptions = ["BUSINESS", "INDIVIDUAL"];
 
 export const AccountStatusOptions = ["ACTIVE", "INACTIVE", "BLOCKED"];

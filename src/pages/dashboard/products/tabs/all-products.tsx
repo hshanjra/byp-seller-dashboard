@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { MoreHorizontal } from "lucide-react";
 import Loader from "@/components/Loader";
+import { FRONTEND_URL } from "@/constants";
 function AllProducts() {
   const navigate = useNavigate();
 
@@ -131,7 +132,13 @@ function AllProducts() {
                 </TableCell>
 
                 <TableCell className="font-medium">
-                  {product.productTitle}
+                  <a
+                    href={`${FRONTEND_URL}/product/${product.productSlug}`}
+                    target="_blank"
+                    className="hover:underline"
+                  >
+                    {product.productTitle}
+                  </a>
                 </TableCell>
 
                 <TableCell>
