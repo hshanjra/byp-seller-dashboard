@@ -46,7 +46,7 @@ export const OnboardingFormDefaultValues = {
   zip: "", // Required field
   country: "United States", // Default to United States
   displayName: "", // Required, default to empty string
-  businessEmail: "", // Optional but required for "BUSINESS"
+  businessEmail: undefined, // Optional but required for "BUSINESS"
   businessPhone: undefined, // Optional but required for "BUSINESS"
   about: "", // Optional
   returnPolicy: "", // Optional
