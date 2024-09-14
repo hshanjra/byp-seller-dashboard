@@ -63,7 +63,7 @@ export async function createSellerStore(v: OnboardingFormData) {
     formData.append("SSN", values.ssn?.toString() || "");
     formData.append(
       "dateOfBirth",
-      values.dateOfBirth ? new Date(values.dateOfBirth).toISOString() : ""
+      values.dateOfBirth ? values.dateOfBirth.toString() : ""
     ); // Convert to ISO string for consistency
   }
 
@@ -73,11 +73,11 @@ export async function createSellerStore(v: OnboardingFormData) {
     formData.append("businessName", values.businessName || "");
     formData.append("businessEmail", values.businessEmail || "");
     formData.append("businessPhone", values.businessPhone?.toString() || "");
-    formData.append("businessLicense", values.businessLicense || "");
-    formData.append(
-      "businessLicenseExp",
-      new Date(values.businessLicenseExp || "").toISOString()
-    );
+    // formData.append("businessLicense", values.businessLicense || "");
+    // formData.append(
+    //   "businessLicenseExp",
+    //   values.businessLicenseExp?.toString() || ""
+    // );
   }
 
   try {

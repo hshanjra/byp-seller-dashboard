@@ -80,8 +80,8 @@ const steps = [
     name: "Bank Details",
     fields: [
       "bankAccountType",
-      "bankName",
       "accountHolderName",
+      "bankName",
       "accountNumber",
       "routingNumber",
       "bankBic",
