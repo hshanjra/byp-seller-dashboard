@@ -68,21 +68,22 @@ function ProductImagesUploader({
           {...getRootProps()}
           type="button"
           className={cn(
-            "flex h-40 w-full items-center justify-center rounded-md border border-dashed",
+            "flex h-52 w-full items-center justify-center rounded-md border-2 border-dashed",
             {
               "border-sky-500 bg-sky-50": isDragActive,
             }
           )}
         >
           <div className="flex flex-col gap-2 justify-center items-center">
-            <p className="text-sm">
-              <span className="text-sky-500">Click to upload</span> or drag and
-              drop
+            <Upload className="h-4 w-4 text-zinc-700" />
+            <p className="text-sm font-bold text-zinc-700">
+              Drag drop some files here, or click to select files
             </p>
 
-            <p className="text-xs font-semibold">JPG, JPEG, PNG or WebP</p>
-            <Upload className="h-4 w-4 text-muted-foreground" />
             <span className="sr-only">Upload</span>
+            <p className="text-xs font-semibold text-zinc-400">
+              JPG, JPEG, PNG or WebP. Up to 2MB each
+            </p>
           </div>
 
           <input {...getInputProps()} />
@@ -120,7 +121,7 @@ function ProductImagesUploader({
             {...getRootProps()}
             type="button"
           >
-            <Upload className="h-4 w-4 text-muted-foreground" />
+            <Upload className="h-4 w-4 text-zinc-700" />
             <span className="sr-only">Upload</span>
             <input {...getInputProps()} />
           </button>

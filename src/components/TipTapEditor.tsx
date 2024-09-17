@@ -20,72 +20,77 @@ import {
 } from "lucide-react";
 import { Toggle } from "./ui/toggle";
 import { Separator } from "./ui/separator";
+import { forwardRef } from "react";
 
 interface TipTapEditorProps {
   name?: string;
   className?: string;
   placeholder?: string;
-  value?: string;
+  description?: string;
   onChange: (richText: string) => void;
 }
 
-function TipTapEditor(props: TipTapEditorProps) {
-  const editor = useEditor({
-    extensions: [
-      StarterKit,
-      Placeholder.configure({
-        // Use different placeholders depending on the node type:
-        placeholder: ({ node }) => {
-          if (node.type.name === "heading") {
-            return "What's the title?";
-          }
+const TipTapEditor = forwardRef<HTMLDivElement, TipTapEditorProps>(
+  (props, ref) => {
+    const editor = useEditor({
+      extensions: [
+        StarterKit,
+        Placeholder.configure({
+          // Use different placeholders depending on the node type:
+          placeholder: ({ node }) => {
+            if (node.type.name === "heading") {
+              return "What's the title?";
+            }
 
-          return props.placeholder || "Write something...";
-        },
-        emptyEditorClass: "is-editor-empty",
-        showOnlyWhenEditable: false,
-      }),
-    ],
-    content: props.value || "",
-    onUpdate: ({ editor }) => {
-      props.onChange(editor.getHTML());
-    },
-  });
+            return props.placeholder || "Write something...";
+          },
+          emptyEditorClass: "is-editor-empty",
+          showOnlyWhenEditable: false,
+        }),
+      ],
 
-  if (!editor) return null;
+      content: props.description || "",
+      onUpdate: ({ editor }) => {
+        props.onChange(editor.getHTML());
+      },
+    });
 
-  return (
-    <div
-      className={cn(
-        "flex flex-col justify-stretch min-h-36 relative z-20 border w-full rounded-md border-input overflow-hidden",
-        props.className
-      )}
-    >
-      <EditorContent
-        editor={editor}
-        className="rounded-md border w-full border-input bg-background p-4 tip-tap-editor focus:ring-0"
-        name={props.name}
-      />
+    if (!editor) return null;
 
-      <FloatingMenu
-        editor={editor}
-        tippyOptions={{
-          duration: 100,
-        }}
-        className="border border-input bg-white shadow-md rounded-md overflow-hidden max-w-sm mb-20 z-0"
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex flex-col justify-stretch min-h-36 relative z-20 w-full rounded-md overflow-hidden",
+          props.className
+        )}
       >
-        <TipTapMenu editor={editor} />
-      </FloatingMenu>
+        <EditorContent
+          editor={editor}
+          className="rounded-md w-full bg-background p-4 tip-tap-editor focus:ring-0"
+          name={props.name}
+        />
 
-      <BubbleMenu
-        editor={editor}
-        className="border border-input bg-white shadow-md rounded-md overflow-hidden max-w-sm mb-2 z-0"
-      >
-        <TipTapMenu editor={editor} />
-      </BubbleMenu>
-    </div>
-  );
-}
+        <FloatingMenu
+          editor={editor}
+          tippyOptions={{
+            duration: 100,
+          }}
+          className="border border-input bg-white shadow-md rounded-md overflow-hidden max-w-sm mb-20 z-0"
+        >
+          <TipTapMenu editor={editor} />
+        </FloatingMenu>
+
+        <BubbleMenu
+          editor={editor}
+          className="border border-input bg-white shadow-md rounded-md overflow-hidden max-w-sm mb-2 z-0"
+        >
+          <TipTapMenu editor={editor} />
+        </BubbleMenu>
+      </div>
+    );
+  }
+);
 
 export default TipTapEditor;
 

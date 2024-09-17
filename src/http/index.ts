@@ -115,9 +115,10 @@ export async function getProducts({
   try {
     const safePage = page || 1;
     const safeLimit = limit || 30;
+    const safeStatus = status || "";
 
     const { data } = await api.get(
-      `/seller/products?status=${status}&page=${safePage}&limit=${safeLimit}`
+      `/seller/products?status=${safeStatus}&page=${safePage}&limit=${safeLimit}`
     );
     return data;
   } catch (error: any) {

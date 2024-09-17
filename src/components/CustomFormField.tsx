@@ -230,15 +230,17 @@ const RenderInput = ({
 
     case FormFieldType.TEXT_EDITOR:
       return (
-        <div className="flex rounded-md border-input">
+        <div className="flex rounded-md border-input border">
           {props.icon && (
             <div className="flex items-center p-1"> {props.icon}</div>
           )}
           <FormControl>
             <TipTapEditor
+              {...field}
               placeholder={props.placeholder}
               className={cn("h-11", props.className)}
-              {...field}
+              description={field.value}
+              onChange={field.onChange}
             />
           </FormControl>
         </div>

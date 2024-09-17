@@ -64,6 +64,12 @@ export const OnboardingSchema = z
       .string()
       .min(1, "Bank address is required")
       .max(100, "Bank address is too long"),
+    bankTerms: z
+      .boolean()
+      .default(false)
+      .refine((value) => value, {
+        message: "Please accept terms.",
+      }),
   })
   .superRefine((data, ctx) => {
     if (!data.identityDocs || data.identityDocs.length === 0) {

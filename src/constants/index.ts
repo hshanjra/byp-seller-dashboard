@@ -32,7 +32,16 @@ export const AccountStatusOptions = ["ACTIVE", "INACTIVE", "BLOCKED"];
 export const VerificationStatusOptions = ["PENDING", "APPROVED", "REJECTED"];
 
 export const ProductConditionOptions = ["NEW", "USED", "REFURBISHED"];
-export const ProductStatusOptions = ["ACTIVE", "INACTIVE"];
+export const ProductStatusOptions = [
+  {
+    label: "Published",
+    value: "ACTIVE",
+  },
+  {
+    label: "Draft",
+    value: "INACTIVE",
+  },
+];
 
 export const OnboardingFormDefaultValues = {
   accountType: AccountTypeOptions[0] as any, // Default is "BUSINESS" as per the schema

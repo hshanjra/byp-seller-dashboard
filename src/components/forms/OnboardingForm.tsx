@@ -88,6 +88,7 @@ const steps = [
       "bankIban",
       "bankSwiftCode",
       "bankAddress",
+      "bankTerms",
     ],
   },
   { id: "Step 5", name: "Submit Application", fields: [] },
@@ -385,7 +386,7 @@ function OnboardingForm() {
                       </div>
 
                       {/* Business License */}
-                      <div className="sm:col-span-3">
+                      {/* <div className="sm:col-span-3">
                         <CustomFormField
                           fieldType={FormFieldType.INPUT}
                           control={form.control}
@@ -402,7 +403,7 @@ function OnboardingForm() {
                           label="Business License Expiration Date (optional)"
                           placeholder="Select Date"
                         />
-                      </div>
+                      </div> */}
 
                       {/* EIN */}
                       <div className="col-span-full">
@@ -589,7 +590,7 @@ function OnboardingForm() {
 
                   <div className="sm:col-span-3">
                     <FormLabel>Store address</FormLabel>
-                    <div className="flex rounded-md border border-zinc-500 mt-2">
+                    <div className="flex rounded-md border border-input mt-2">
                       <div className="flex items-center p-2">
                         <Link />
                       </div>
@@ -766,6 +767,15 @@ function OnboardingForm() {
                       name="bankAddress"
                       label="Bank address"
                       placeholder=""
+                    />
+                  </div>
+                  {/* Terms */}
+                  <div className="text-sm col-span-full">
+                    <CustomFormField
+                      control={form.control}
+                      name="bankTerms"
+                      fieldType={FormFieldType.CHECKBOX}
+                      label="I attest that I am the owner and have full authorization to this bank account. Please double-check your account information! Incorrect or mismatched account name and number can result in withdrawal delays and fees."
                     />
                   </div>
                 </div>

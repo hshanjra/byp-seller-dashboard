@@ -89,7 +89,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
         productLength: product.productDimensions?.length ?? 0,
         productWidth: product.productDimensions?.width ?? 0,
         productHeight: product.productDimensions?.height ?? 0,
-        category: product.category?.id ?? "",
+        category: product.category?.id || "",
         productStock: product.productStock ?? 0,
         regularPrice: product.regularPrice ?? 0,
         salePrice: product.salePrice ?? 0,
@@ -147,7 +147,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
   const isGenericProduct = form.watch("isGenericProduct");
   const selectedMake = form.watch("compatibleMake");
   const selectedModels = form.watch("compatibleModels");
-  const selectedSubmodels = form.watch("compatibleSubmodels");
+  // const selectedSubmodels = form.watch("compatibleSubmodels");
 
   // Find the selected category
   const selectedCategory = categories?.find(
@@ -208,11 +208,10 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
             <div className="flex flex-col gap-5 sm:col-span-4">
               {/* Product Details */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Product Details</CardTitle>
-                  <CardDescription>
-                    This information will be displayed publicly
-                  </CardDescription>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-zinc-400 uppercase tracking-wider text-base">
+                    Product Details
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-6">
@@ -262,7 +261,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                       name="shortDescription"
                       label="Short Description"
                       placeholder="Enter a short description of your product, we recommend writing in list style with bullet points"
-                      className="h-56"
+                      // className="h-56"
                     />
 
                     <CustomFormField
@@ -271,7 +270,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                       name="longDescription"
                       label="Long Description"
                       placeholder="Enter a detailed description of your product"
-                      className="h-80"
+                      // className="h-80"
                     />
                   </div>
                 </CardContent>
@@ -279,8 +278,10 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
 
               {/* Images */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Product Images</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-zinc-400 uppercase tracking-wider text-base">
+                    Product Images
+                  </CardTitle>
                   <CardDescription>
                     Add multiple images to your product. Max 12 images (PNG,
                     JPG, JPEG, WebP).
@@ -319,8 +320,10 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
 
               {/* Category */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Product Category</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-zinc-400 uppercase tracking-wider text-base">
+                    Product Category
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-6 sm:grid-cols-3">
@@ -384,8 +387,10 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
 
               {/* Stock & Price */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Stock / Price / SKU</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-zinc-400 uppercase tracking-wider text-base">
+                    Stock / Price / SKU
+                  </CardTitle>
                   <CardDescription>
                     Add the stock and price of your product
                   </CardDescription>
@@ -449,8 +454,10 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
 
               {/* Shipping */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Shipping</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-zinc-400 uppercase tracking-wider text-base">
+                    Shipping
+                  </CardTitle>
                   <CardDescription>
                     Add Shipping and product dimensions
                   </CardDescription>
@@ -511,8 +518,10 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
 
               {/* Compatibility Matcher */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Part Compatibility</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-zinc-400 uppercase tracking-wider text-base">
+                    Part Compatibility
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-6">
                   <CustomFormField
@@ -522,6 +531,69 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                     label="This is a generic product (check this if you don't have any vehicle information)"
                   />
 
+                  {/* Years */}
+                  {!isGenericProduct && (
+                    <div>
+                      <div className="flex flex-col gap-2">
+                        <CustomFormField
+                          fieldType={FormFieldType.SKELETON}
+                          control={form.control}
+                          name="compatibleYears"
+                          renderSkeleton={() => (
+                            <FormItem>
+                              <div className="mb-4">
+                                <FormLabel className="text-sm">
+                                  Select compatible years
+                                </FormLabel>
+                              </div>
+                              <div className="grid sm:grid-cols-3 gap-3">
+                                {getRecentYears().map((item, i) => (
+                                  <FormField
+                                    key={i}
+                                    control={form.control}
+                                    name="compatibleYears"
+                                    render={({ field }) => {
+                                      return (
+                                        <FormItem
+                                          key={item}
+                                          className="flex flex-row items-start space-x-2 space-y-0"
+                                        >
+                                          <FormControl>
+                                            <Checkbox
+                                              onCheckedChange={(checked) => {
+                                                return checked
+                                                  ? field.onChange([
+                                                      ...field.value,
+                                                      item,
+                                                    ])
+                                                  : field.onChange(
+                                                      field.value?.filter(
+                                                        (value) =>
+                                                          value !== item
+                                                      )
+                                                    );
+                                              }}
+                                              checked={field.value?.includes(
+                                                item
+                                              )}
+                                            />
+                                          </FormControl>
+                                          <FormLabel className="font-normal">
+                                            {item}
+                                          </FormLabel>
+                                        </FormItem>
+                                      );
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </div>
+                  )}
+
                   {!isGenericProduct && (
                     <div>
                       {/* Make */}
@@ -529,7 +601,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                         fieldType={FormFieldType.SELECT}
                         control={form.control}
                         name="compatibleMake"
-                        label="Compatible Make"
+                        label="Select compatible make"
                         placeholder="Select compatible make"
                       >
                         {VEHICLE_ATTRIBUTES.map((vehicle) => (
@@ -551,7 +623,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                                 <FormItem>
                                   <div className="mb-4">
                                     <FormLabel className="text-sm">
-                                      Compatible Models
+                                      Select compatible models
                                     </FormLabel>
                                   </div>
                                   <div className="grid sm:grid-cols-3 gap-3">
@@ -584,6 +656,9 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                                                           )
                                                         );
                                                   }}
+                                                  checked={field.value?.includes(
+                                                    item.name
+                                                  )}
                                                 />
                                               </FormControl>
                                               <FormLabel className="font-normal">
@@ -614,7 +689,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                                 <FormItem>
                                   <div className="mb-4">
                                     <FormLabel className="text-sm">
-                                      Compatible Sub Models
+                                      Select compatible sub models
                                     </FormLabel>
                                   </div>
                                   <div className="grid sm:grid-cols-3 gap-3">
@@ -646,68 +721,9 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                                                           )
                                                         );
                                                   }}
-                                                />
-                                              </FormControl>
-                                              <FormLabel className="font-normal">
-                                                {item}
-                                              </FormLabel>
-                                            </FormItem>
-                                          );
-                                        }}
-                                      />
-                                    ))}
-                                  </div>
-                                </FormItem>
-                              )}
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Years */}
-                      {selectedSubmodels && selectedSubmodels.length > 0 && (
-                        <div className="my-4">
-                          <div className="flex flex-col gap-2 mt-2">
-                            <CustomFormField
-                              fieldType={FormFieldType.SKELETON}
-                              control={form.control}
-                              name="compatibleYears"
-                              renderSkeleton={() => (
-                                <FormItem>
-                                  <div className="mb-4">
-                                    <FormLabel className="text-sm">
-                                      Compatible Years
-                                    </FormLabel>
-                                  </div>
-                                  <div className="grid sm:grid-cols-3 gap-3">
-                                    {getRecentYears().map((item, i) => (
-                                      <FormField
-                                        key={i}
-                                        control={form.control}
-                                        name="compatibleYears"
-                                        render={({ field }) => {
-                                          return (
-                                            <FormItem
-                                              key={item}
-                                              className="flex flex-row items-start space-x-2 space-y-0"
-                                            >
-                                              <FormControl>
-                                                <Checkbox
-                                                  onCheckedChange={(
-                                                    checked
-                                                  ) => {
-                                                    return checked
-                                                      ? field.onChange([
-                                                          ...field.value,
-                                                          item,
-                                                        ])
-                                                      : field.onChange(
-                                                          field.value?.filter(
-                                                            (value) =>
-                                                              value !== item
-                                                          )
-                                                        );
-                                                  }}
+                                                  checked={field.value?.includes(
+                                                    item
+                                                  )}
                                                 />
                                               </FormControl>
                                               <FormLabel className="font-normal">
@@ -735,8 +751,10 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
             <div className="sm:col-span-2 flex flex-col gap-5">
               {/* Status */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Product Status</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-zinc-400 uppercase tracking-wider text-base">
+                    Product Status
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid gap-6">
@@ -748,8 +766,8 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                       placeholder="Select status"
                     >
                       {ProductStatusOptions.map((status, i) => (
-                        <SelectItem key={i} value={status}>
-                          <p>{status}</p>
+                        <SelectItem key={i} value={status.value}>
+                          <p>{status.label}</p>
                         </SelectItem>
                       ))}
                     </CustomFormField>
@@ -759,8 +777,10 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
 
               {/* SEO */}
               <Card>
-                <CardHeader>
-                  <CardTitle>Product SEO</CardTitle>
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-zinc-400 uppercase tracking-wider text-base">
+                    Product SEO
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="grid gap-6">
                   <CustomFormField
