@@ -123,10 +123,10 @@ function AllProducts() {
               <TableRow key={product.id}>
                 <TableCell className="hidden sm:table-cell">
                   <img
-                    alt={product.productImages[0].alt || product.productTitle}
+                    alt={product.productImages[0]?.alt || product.productTitle}
                     className="aspect-square rounded-md object-cover"
                     height="64"
-                    src={product.productImages[0].url}
+                    src={product.productImages[0]?.url}
                     width="64"
                   />
                 </TableCell>
