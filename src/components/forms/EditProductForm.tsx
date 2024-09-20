@@ -28,12 +28,16 @@ import {
   UpdateProductSchemaType,
 } from "@/validators/product-validator";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { updateProduct, getCategories, getSingleProduct } from "@/http";
+import {
+  updateProduct,
+  getCategories,
+  getSingleProduct,
+  getCompatibleMetadata,
+} from "@/http";
 import {
   ProductConditionOptions,
   ProductsFormDefaultValues,
   ProductStatusOptions,
-  VEHICLE_ATTRIBUTES,
 } from "@/constants";
 import { Checkbox } from "../ui/checkbox";
 import { getRecentYears } from "@/lib/utils";
@@ -142,6 +146,13 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
     staleTime: 60 * 60 * 1000, // 1 hour
   });
 
+  // Fetch Compatible Metadata
+  const { data: metadata } = useQuery({
+    queryKey: ["metadata"],
+    queryFn: async () => await getCompatibleMetadata(),
+    refetchOnWindowFocus: false,
+  });
+
   // Form Elements
   const selectedCategoryId = form.watch("category") as any;
   const isGenericProduct = form.watch("isGenericProduct");
@@ -162,20 +173,26 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
 
   /* COMPATIBILITY FIELDS */
   const getModels = () => {
-    const make = VEHICLE_ATTRIBUTES.find((v) => v.make === selectedMake);
+    const make = metadata?.find((v) => v.make === selectedMake);
     return make ? make.models : [];
   };
 
   const getSubModels = () => {
-    const make = VEHICLE_ATTRIBUTES.find((v) => v.make === selectedMake);
+    // Return submodels based on selected models
+    const make = metadata?.find((v) => v.make === selectedMake);
     if (!make) return [];
 
-    const subModels = selectedModels.map((model) => {
-      const subModel = make.models.find((m) => m.name === model);
-      return subModel ? subModel.subModels : [];
-    });
+    // Filter unique submodels
+    const subModels = selectedModels
+      .map((model) => {
+        const subModel = make.models.find((m) => m.name === model);
+        return subModel ? subModel.subModels : [];
+      })
+      .flat(); // Flatten the array if subModels are arrays within arrays
 
-    return subModels.flat();
+    const uniqueSubModels = Array.from(new Set(subModels)); // Use Set to filter unique submodels
+
+    return uniqueSubModels;
   };
 
   if (!productId || productId === null) {
@@ -622,7 +639,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                         label="Select compatible make"
                         placeholder="Select compatible make"
                       >
-                        {VEHICLE_ATTRIBUTES.map((vehicle) => (
+                        {metadata?.map((vehicle) => (
                           <SelectItem key={vehicle.make} value={vehicle.make}>
                             <p>{vehicle.make}</p>
                           </SelectItem>
