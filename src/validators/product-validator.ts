@@ -41,20 +41,22 @@ export const createProductSchema = z
     productLength: z.coerce
       .number()
       .positive("Length must be greater than 0")
-      .min(1, "Enter length")
-      .max(100, "Product length is too long"),
+      .min(1, "Enter length"),
     productWidth: z.coerce
       .number()
       .positive("Width must be greater than 0")
-      .min(1, "Width is required")
-      .max(100, "Product width is too long"),
+      .min(1, "Width is required"),
     productHeight: z.coerce
       .number()
       .positive("Height must be greater than 0")
-      .min(1, "Height is required")
-      .max(100, "Product height is too long"),
+      .min(1, "Height is required"),
+    productWeight: z.coerce
+      .number()
+      .positive("Weight must be greater than 0")
+      .min(1, "Weight is required"),
     shippingPrice: z.coerce
       .number()
+      .min(0, "Shipping price must be greater than 0")
       .max(100, "Shipping price must be less than $100")
       .optional(),
     category: z.string().min(1, "Please select a category"),
@@ -183,20 +185,22 @@ export const updateProductSchema = z
     productLength: z.coerce
       .number()
       .positive("Length must be greater than 0")
-      .min(1, "Enter length")
-      .max(100, "Product length is too long"),
+      .min(1, "Enter length"),
     productWidth: z.coerce
       .number()
       .positive("Width must be greater than 0")
-      .min(1, "Width is required")
-      .max(100, "Product width is too long"),
+      .min(1, "Width is required"),
     productHeight: z.coerce
       .number()
       .positive("Height must be greater than 0")
-      .min(1, "Height is required")
-      .max(100, "Product height is too long"),
+      .min(1, "Height is required"),
+    productWeight: z.coerce
+      .number()
+      .positive("Weight must be greater than 0")
+      .min(1, "Weight is required"),
     shippingPrice: z.coerce
       .number()
+      .min(0, "Shipping price must be greater than 0")
       .max(100, "Shipping price must be less than $100")
       .optional(),
     category: z.string().min(1, "Please select a category"),

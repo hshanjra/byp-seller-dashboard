@@ -1,5 +1,5 @@
 import api from "@/lib/api";
-import { Category, Product } from "@/types";
+import { Category, Metadata, Product } from "@/types";
 import {
   OnboardingFormData,
   OnboardingSchema,
@@ -115,13 +115,14 @@ export async function getProducts({
   try {
     const safePage = page || 1;
     const safeLimit = limit || 30;
-    const safeStatus = status || "";
+    const safeStatus = status || "ALL";
 
     const { data } = await api.get(
       `/seller/products?status=${safeStatus}&page=${safePage}&limit=${safeLimit}`
     );
     return data;
   } catch (error: any) {
+    console.log(error);
     if (error.status === 404) {
       return [];
     }
@@ -140,6 +141,13 @@ export async function getCategories(): Promise<Category[]> {
     }
     throw error;
   }
+}
+
+// Get compatible metadata
+export async function getCompatibleMetadata(): Promise<Metadata[]> {
+  const { data } = await api.get<Metadata[]>("/products/compatible-metadata");
+
+  return data;
 }
 
 // Create Product
@@ -278,6 +286,7 @@ export function buildProductFormData(v: CreateProductSchemaType) {
   formData.append("productLength", v.productLength.toString());
   formData.append("productWidth", v.productWidth.toString());
   formData.append("productHeight", v.productHeight.toString());
+  formData.append("productWeight", v.productWeight.toString());
   formData.append("categoryId", v.category);
   formData.append("metaTitle", v.metaTitle);
   formData.append("metaDescription", v.metaDescription);

@@ -30,7 +30,13 @@ import { useNavigate } from "react-router-dom";
 import { MoreHorizontal } from "lucide-react";
 import Loader from "@/components/Loader";
 import { FRONTEND_URL } from "@/constants";
-function AllProducts() {
+
+interface ProductTabProps {
+  status?: "ACTIVE" | "INACTIVE";
+  cardTitle?: string;
+}
+
+function ProductsTab({ status, cardTitle }: ProductTabProps) {
   const navigate = useNavigate();
 
   const {
@@ -38,8 +44,8 @@ function AllProducts() {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["products"],
-    queryFn: async () => await getProducts({}),
+    queryKey: ["products", status],
+    queryFn: async () => await getProducts({ status }),
     refetchOnWindowFocus: false,
   });
 
@@ -94,7 +100,7 @@ function AllProducts() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>All Products</CardTitle>
+        <CardTitle>{cardTitle || "All Products"}</CardTitle>
         <CardDescription>
           Manage your products and view their sales performance.
         </CardDescription>
@@ -196,4 +202,4 @@ function AllProducts() {
   );
 }
 
-export default AllProducts;
+export default ProductsTab;

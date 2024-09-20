@@ -11,9 +11,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { File, ListFilter, PlusCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import AllProducts from "./tabs/all-products";
-import ActiveProducts from "./tabs/active-products";
-import InActiveProducts from "./tabs/inactive-products";
+import ProductsTab from "./ProductsTab";
 
 function ProductsPage() {
   const navigate = useNavigate();
@@ -25,7 +23,7 @@ function ProductsPage() {
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="active">Active</TabsTrigger>
-            <TabsTrigger value="inactive">Inactive</TabsTrigger>
+            <TabsTrigger value="inactive">Draft</TabsTrigger>
           </TabsList>
           <div className="ml-auto flex items-center gap-2">
             <DropdownMenu>
@@ -65,15 +63,15 @@ function ProductsPage() {
           </div>
         </div>
         <TabsContent value="all">
-          <AllProducts />
+          <ProductsTab />
         </TabsContent>
 
         <TabsContent value="active">
-          <ActiveProducts />
+          <ProductsTab status="ACTIVE" cardTitle="Active Products" />
         </TabsContent>
 
         <TabsContent value="inactive">
-          <InActiveProducts />
+          <ProductsTab status="INACTIVE" cardTitle="Draft Products" />
         </TabsContent>
       </Tabs>
     </DashboardContent>

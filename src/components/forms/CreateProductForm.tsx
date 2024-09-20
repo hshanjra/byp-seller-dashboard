@@ -28,17 +28,16 @@ import {
   CreateProductSchemaType,
 } from "@/validators/product-validator";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { createProduct, getCategories } from "@/http";
+import { createProduct, getCategories, getCompatibleMetadata } from "@/http";
 import {
   ProductConditionOptions,
   ProductsFormDefaultValues,
   ProductStatusOptions,
-  VEHICLE_ATTRIBUTES,
 } from "@/constants";
 import { Checkbox } from "../ui/checkbox";
-import { getRecentYears } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { getRecentYears } from "@/lib/utils";
 
 interface CreateProductFormProps {
   title?: string;
@@ -88,6 +87,13 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
     staleTime: 60 * 60 * 1000, // 1 hour
   });
 
+  // Fetch Compatible Metadata
+  const { data: metadata } = useQuery({
+    queryKey: ["metadata"],
+    queryFn: async () => await getCompatibleMetadata(),
+    refetchOnWindowFocus: false,
+  });
+
   // Form Elements
   const selectedCategoryId = form.watch("category") as any;
   const isGenericProduct = form.watch("isGenericProduct");
@@ -108,12 +114,12 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
 
   /* COMPATIBILITY FIELDS */
   const getModels = () => {
-    const make = VEHICLE_ATTRIBUTES.find((v) => v.make === selectedMake);
+    const make = metadata?.find((v) => v.make === selectedMake);
     return make ? make.models : [];
   };
 
   const getSubModels = () => {
-    const make = VEHICLE_ATTRIBUTES.find((v) => v.make === selectedMake);
+    const make = metadata?.find((v) => v.make === selectedMake);
     if (!make) return [];
 
     const subModels = selectedModels.map((model) => {
@@ -397,14 +403,16 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
                 </CardHeader>
                 <CardContent>
                   <Table>
-                    <TableHeader>
+                    {/* <TableHeader>
                       <TableRow>
                         <TableHead>Length (in mm)</TableHead>
                         <TableHead>Width (in mm)</TableHead>
+                      </TableRow>
+                      <TableRow>
                         <TableHead>Height (in mm)</TableHead>
                         <TableHead>Shipping Price (USD)</TableHead>
                       </TableRow>
-                    </TableHeader>
+                    </TableHeader> */}
                     <TableBody>
                       <TableRow>
                         <TableCell>
@@ -414,6 +422,7 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
                             placeholder="0"
                             fieldType={FormFieldType.INPUT}
                             type="number"
+                            label="Length (in mm)"
                           />
                         </TableCell>
                         <TableCell>
@@ -423,8 +432,11 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
                             placeholder="0"
                             fieldType={FormFieldType.INPUT}
                             type="number"
+                            label="Width (in mm)"
                           />
                         </TableCell>
+                      </TableRow>
+                      <TableRow>
                         <TableCell>
                           <CustomFormField
                             control={form.control}
@@ -432,8 +444,21 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
                             placeholder="0"
                             fieldType={FormFieldType.INPUT}
                             type="number"
+                            label="Height (in mm)"
                           />
                         </TableCell>
+                        <TableCell>
+                          <CustomFormField
+                            control={form.control}
+                            name="productWeight"
+                            placeholder="0"
+                            fieldType={FormFieldType.INPUT}
+                            type="number"
+                            label="Weight (in grams)"
+                          />
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
                         <TableCell>
                           <CustomFormField
                             control={form.control}
@@ -441,6 +466,7 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
                             placeholder="0"
                             fieldType={FormFieldType.INPUT}
                             type="number"
+                            label="Shipping Price (USD)"
                           />
                         </TableCell>
                       </TableRow>
@@ -534,7 +560,7 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
                         label="Select compatible make"
                         placeholder="Select compatible make"
                       >
-                        {VEHICLE_ATTRIBUTES.map((vehicle) => (
+                        {metadata?.map((vehicle) => (
                           <SelectItem key={vehicle.make} value={vehicle.make}>
                             <p>{vehicle.make}</p>
                           </SelectItem>

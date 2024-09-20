@@ -464,14 +464,14 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                 </CardHeader>
                 <CardContent>
                   <Table>
-                    <TableHeader>
+                    {/* <TableHeader>
                       <TableRow>
                         <TableHead>Length (in mm)</TableHead>
                         <TableHead>Width (in mm)</TableHead>
                         <TableHead>Height (in mm)</TableHead>
                         <TableHead>Shipping Price (USD)</TableHead>
                       </TableRow>
-                    </TableHeader>
+                    </TableHeader> */}
                     <TableBody>
                       <TableRow>
                         <TableCell>
@@ -481,6 +481,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                             placeholder="0"
                             fieldType={FormFieldType.INPUT}
                             type="number"
+                            label="Length (in mm)"
                           />
                         </TableCell>
                         <TableCell>
@@ -490,8 +491,11 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                             placeholder="0"
                             fieldType={FormFieldType.INPUT}
                             type="number"
+                            label="Width (in mm)"
                           />
                         </TableCell>
+                      </TableRow>
+                      <TableRow>
                         <TableCell>
                           <CustomFormField
                             control={form.control}
@@ -499,8 +503,21 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                             placeholder="0"
                             fieldType={FormFieldType.INPUT}
                             type="number"
+                            label="Height (in mm)"
                           />
                         </TableCell>
+                        <TableCell>
+                          <CustomFormField
+                            control={form.control}
+                            name="productWeight"
+                            placeholder="0"
+                            fieldType={FormFieldType.INPUT}
+                            type="number"
+                            label="Weight (in grams)"
+                          />
+                        </TableCell>
+                      </TableRow>
+                      <TableRow>
                         <TableCell>
                           <CustomFormField
                             control={form.control}
@@ -508,6 +525,7 @@ function EditProductForm({ title, buttonTitle }: CreateProductFormProps) {
                             placeholder="0"
                             fieldType={FormFieldType.INPUT}
                             type="number"
+                            label="Shipping Price (USD)"
                           />
                         </TableCell>
                       </TableRow>

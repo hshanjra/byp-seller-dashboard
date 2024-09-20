@@ -11,6 +11,15 @@ export interface User {
   merchantAccountStatus: string | null;
 }
 
+export type Metadata = {
+  make: string;
+  models: {
+    name: string;
+    subModels: string[];
+  }[];
+  years: number[];
+};
+
 export type Product = {
   id: string;
   productId: string;
