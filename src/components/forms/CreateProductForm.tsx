@@ -119,15 +119,21 @@ function CreateProductForm({ title, buttonTitle }: CreateProductFormProps) {
   };
 
   const getSubModels = () => {
+    // Return submodels based on selected models
     const make = metadata?.find((v) => v.make === selectedMake);
     if (!make) return [];
 
-    const subModels = selectedModels.map((model) => {
-      const subModel = make.models.find((m) => m.name === model);
-      return subModel ? subModel.subModels : [];
-    });
+    // Filter unique submodels
+    const subModels = selectedModels
+      .map((model) => {
+        const subModel = make.models.find((m) => m.name === model);
+        return subModel ? subModel.subModels : [];
+      })
+      .flat(); // Flatten the array if subModels are arrays within arrays
 
-    return subModels.flat();
+    const uniqueSubModels = Array.from(new Set(subModels)); // Use Set to filter unique submodels
+
+    return uniqueSubModels;
   };
   // Reset form values when selected make changes
   // useEffect(() => {
